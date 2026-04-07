@@ -1,22 +1,37 @@
-// GET /api/auth/callback?provider=...&code=... — handle OAuth callback
+// GET /api/auth/callback — handle OAuth callback
 
 import { exchangeCode, fetchUserProfile } from '../../lib/oauth';
-import { createSessionData, createSessionCookie, setSessionHeaders } from '../../lib/session';
+import { createSessionData, createSessionCookie } from '../../lib/session';
 import { ensureUser, type Env } from '../../lib/auth';
 import { getDB } from '../../lib/db';
 
+function readOAuthCookie(request: Request): { s: string; p: string } | null {
+  try {
+    const header = request.headers.get('Cookie') || '';
+    const match = header.match(/bookmarkviz_oauth=([^;]+)/);
+    if (!match) return null;
+    return JSON.parse(atob(match[1]));
+  } catch {
+    return null;
+  }
+}
+
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const url = new URL(request.url);
-  const provider = url.searchParams.get('provider') || 'github';
   const code = url.searchParams.get('code');
 
   if (!code) {
-    return new Response('Missing authorization code', { status: 400 });
+    return Response.redirect(`${url.origin}/?auth_error=${encodeURIComponent('Missing code')}`, 302);
   }
+
+  // Read provider from cookie (set by /api/auth/login), not from URL
+  const oauth = readOAuthCookie(request);
+  const provider = oauth?.p || 'github';
 
   const clientId = provider === 'github' ? env.GITHUB_CLIENT_ID : env.GOOGLE_CLIENT_ID;
   const clientSecret = provider === 'github' ? env.GITHUB_CLIENT_SECRET : env.GOOGLE_CLIENT_SECRET;
-  const redirectUri = `${url.origin}/api/auth/callback?provider=${provider}`;
+  // FIX 1: Clean URL without ?provider= query param
+  const redirectUri = `${url.origin}/api/auth/callback`;
 
   try {
     // Exchange code for access token
@@ -39,16 +54,16 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     const session = createSessionData(userId, provider);
     const cookie = await createSessionCookie(session, env.SESSION_SECRET);
 
-    // Redirect to dashboard
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: '/dashboard',
-        ...setSessionHeaders(cookie),
-      },
-    });
+    // FIX 2: Use Headers object for multiple Set-Cookie (original used object spread which combined them)
+    const headers = new Headers();
+    headers.set('Location', '/dashboard');
+    headers.append('Set-Cookie', `bookmarkviz_session=${cookie}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${30 * 24 * 60 * 60}`);
+    headers.append('Set-Cookie', 'bookmarkviz_oauth=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0');
+
+    return new Response(null, { status: 302, headers });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Authentication failed';
+    console.error('OAuth callback error:', message);
     return Response.redirect(`${url.origin}/?auth_error=${encodeURIComponent(message)}`, 302);
   }
 };

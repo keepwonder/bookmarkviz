@@ -1,7 +1,6 @@
 // GET /api/auth/login?provider=github|google — initiate OAuth flow
 
 import { getAuthorizationUrl, randomState } from '../../lib/oauth';
-import { createSessionCookie, createSessionData } from '../../lib/session';
 import type { Env } from '../../lib/auth';
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
@@ -16,22 +15,19 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const clientId = provider === 'github' ? env.GITHUB_CLIENT_ID : env.GOOGLE_CLIENT_ID;
-  const callbackUrl = `${url.origin}/api/auth/callback?provider=${provider}`;
+  // FIX: Clean callback URL — no query params, must match OAuth provider settings exactly
+  const callbackUrl = `${url.origin}/api/auth/callback`;
   const state = randomState();
 
-  // Store state in cookie for CSRF protection
-  const stateCookie = await createSessionCookie(
-    createSessionData('__state__', state),
-    env.SESSION_SECRET,
-  );
+  // Store provider + CSRF state in cookie (read by callback)
+  const payload = btoa(JSON.stringify({ s: state, p: provider }));
 
   const authorizeUrl = getAuthorizationUrl(provider, clientId, callbackUrl, state);
 
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: authorizeUrl,
-      'Set-Cookie': `bookmarkviz_oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`,
-    },
-  });
+  // FIX: Use Headers object for Set-Cookie
+  const headers = new Headers();
+  headers.set('Location', authorizeUrl);
+  headers.append('Set-Cookie', `bookmarkviz_oauth=${payload}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`);
+
+  return new Response(null, { status: 302, headers });
 };

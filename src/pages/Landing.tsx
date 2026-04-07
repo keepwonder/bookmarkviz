@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
@@ -10,10 +10,32 @@ export default function Landing() {
   const { theme, setTheme } = useTheme();
   const { loading, isAuthenticated } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const l = t.landing;
+
+  // Show auth errors from OAuth callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('auth_error');
+    if (err) {
+      setAuthError(decodeURIComponent(err));
+      window.history.replaceState({}, '', '/');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+      {/* Auth error banner */}
+      {authError && (
+        <div
+          className="flex items-center justify-between gap-3 px-5 py-3 text-[14px]"
+          style={{ background: 'rgba(244,33,46,0.1)', color: '#f4212e', borderBottom: '1px solid rgba(244,33,46,0.3)' }}
+        >
+          <span>{authError}</span>
+          <button onClick={() => setAuthError(null)} className="cursor-pointer font-bold">✕</button>
+        </div>
+      )}
+
       {/* Floating controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
         {/* Language toggle */}
