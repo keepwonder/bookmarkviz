@@ -54,16 +54,17 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     const session = createSessionData(userId, provider);
     const cookie = await createSessionCookie(session, env.SESSION_SECRET);
 
-    // FIX 2: Use Headers object for multiple Set-Cookie (original used object spread which combined them)
+    // FIX 2: Use Headers object for multiple Set-Cookie; skip Secure on localhost
+    const secure = url.protocol === 'https:' ? '; Secure' : '';
     const headers = new Headers();
     headers.set('Location', '/dashboard');
-    headers.append('Set-Cookie', `bookmarkviz_session=${cookie}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${30 * 24 * 60 * 60}`);
-    headers.append('Set-Cookie', 'bookmarkviz_oauth=; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=0');
+    headers.append('Set-Cookie', `bookmarkviz_session=${cookie}; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=${30 * 24 * 60 * 60}`);
+    headers.append('Set-Cookie', `bookmarkviz_oauth=; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=0`);
 
     return new Response(null, { status: 302, headers });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Authentication failed';
-    console.error('OAuth callback error:', message);
+    console.error('OAuth callback error:', message, err);
     return Response.redirect(`${url.origin}/?auth_error=${encodeURIComponent(message)}`, 302);
   }
 };

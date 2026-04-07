@@ -45,6 +45,8 @@ export default function Home() {
         // Authenticated but no cloud data yet
         setNoData(true);
       }
+    }).catch(() => {
+      setNoData(true);
     });
   }, [isAuthenticated]);
 

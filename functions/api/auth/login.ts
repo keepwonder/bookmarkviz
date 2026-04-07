@@ -24,10 +24,11 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
 
   const authorizeUrl = getAuthorizationUrl(provider, clientId, callbackUrl, state);
 
-  // FIX: Use Headers object for Set-Cookie
+  // FIX: Use Headers object for Set-Cookie; skip Secure flag on localhost (HTTP)
+  const secure = url.protocol === 'https:' ? '; Secure' : '';
   const headers = new Headers();
   headers.set('Location', authorizeUrl);
-  headers.append('Set-Cookie', `bookmarkviz_oauth=${payload}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`);
+  headers.append('Set-Cookie', `bookmarkviz_oauth=${payload}; HttpOnly${secure}; SameSite=Lax; Path=/; Max-Age=600`);
 
   return new Response(null, { status: 302, headers });
 };

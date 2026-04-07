@@ -109,10 +109,11 @@ export async function fetchUserProfile(
     const res = await fetch(`${GOOGLE_API_URL}/oauth2/v2/userinfo`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    const user = await res.json() as { sub: string; name: string; email: string; picture: string };
+    const user = await res.json() as { sub: string; name?: string; given_name?: string; email?: string; picture?: string };
+    if (!user.sub) throw new Error('Google profile missing subject ID');
     return {
       id: user.sub,
-      name: user.name,
+      name: user.name || user.given_name || user.email?.split('@')[0] || 'User',
       email: user.email,
       avatarUrl: user.picture,
     };
