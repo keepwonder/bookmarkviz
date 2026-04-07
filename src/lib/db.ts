@@ -6,9 +6,13 @@ const KEY = 'latest';
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, 1);
+    // Open without explicit version to avoid version mismatch errors
+    const req = indexedDB.open(DB_NAME);
     req.onupgradeneeded = () => {
-      req.result.createObjectStore(STORE);
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE);
+      }
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
