@@ -45,7 +45,7 @@ export default function Home() {
     );
   }
 
-  const isDemo = data.meta.source === 'demo';
+  const isDemo = data.meta.source === 'demo' && !isAuthenticated;
   const c = t.charts;
 
   return (
