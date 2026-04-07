@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
+import echarts from '../../lib/echarts';
 import 'echarts-wordcloud';
 import type { Analytics } from '../../lib/data';
 import { getChartColors } from '../../lib/chart-theme';

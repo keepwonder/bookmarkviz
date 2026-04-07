@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
+import echarts from '../../lib/echarts';
 import type { Analytics } from '../../lib/data';
 import { useI18n } from '../../lib/i18n';
 import { getChartColors } from '../../lib/chart-theme';

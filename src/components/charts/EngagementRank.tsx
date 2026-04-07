@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
+import echarts from '../../lib/echarts';
 import type { Bookmark } from '../../lib/data';
 import { getChartColors } from '../../lib/chart-theme';
 import { useTheme } from '../../lib/theme';
