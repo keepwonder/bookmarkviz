@@ -93,9 +93,9 @@ export const onRequestPut: PagesFunction<Env> = async ({ request, env }) => {
       await db.batch(stmts.slice(i, i + 50));
     }
 
-    // Save analytics snapshot
+    // Save analytics snapshot with meta
     const analyticsData = body.analytics || {};
-    analyticsData.meta = analyticsData.meta || {
+    analyticsData.meta = body.meta || {
       totalBookmarks: body.bookmarks.length,
       dateRange: null,
       totalAuthors: 0,

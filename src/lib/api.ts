@@ -34,6 +34,7 @@ export async function putBookmarks(data: BookmarksData): Promise<{ count: number
     body: JSON.stringify({
       bookmarks: data.bookmarks,
       analytics: data.analytics,
+      meta: data.meta,
     }),
   });
 }
