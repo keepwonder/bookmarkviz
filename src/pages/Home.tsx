@@ -32,8 +32,8 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
 
 export default function Home() {
   const [data, setData] = useState<BookmarksData | null>(null);
-  const { t } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { t, locale } = useI18n();
+  const { isAuthenticated, login } = useAuth();
 
   useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
@@ -45,10 +45,30 @@ export default function Home() {
     );
   }
 
+  const isDemo = data.meta.source === 'demo';
   const c = t.charts;
 
   return (
     <main className="max-w-[1200px] mx-auto px-5 pb-20">
+      {/* Demo banner */}
+      {isDemo && (
+        <div
+          className="flex items-center justify-between gap-3 rounded-xl px-5 py-3 mb-5 animate-fade-in"
+          style={{ background: 'var(--accent-bg)', border: '1px solid var(--accent)' }}
+        >
+          <span className="text-[14px]" style={{ color: 'var(--accent)' }}>
+            {locale === 'zh' ? '你正在查看演示数据' : 'You are viewing demo data'}
+          </span>
+          <button
+            onClick={() => login('github')}
+            className="px-4 py-1.5 rounded-full text-[13px] font-bold text-white cursor-pointer shrink-0"
+            style={{ background: 'var(--accent)' }}
+          >
+            {locale === 'zh' ? '登录查看自己的书签' : 'Login to See Yours'}
+          </button>
+        </div>
+      )}
+
       <Hero data={data} />
 
       <div className="space-y-5">

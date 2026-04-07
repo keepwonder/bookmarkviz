@@ -34,6 +34,7 @@ export interface BookmarksData {
     dateRange: [string, string];
     totalAuthors: number;
     syncedAt: string;
+    source?: 'api' | 'local' | 'demo';
   };
   bookmarks: Bookmark[];
   analytics: Analytics;
@@ -50,6 +51,7 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
       const { getBookmarks } = await import('./api');
       const apiData = await getBookmarks();
       if (apiData && apiData.bookmarks?.length) {
+        apiData.meta.source = 'api';
         cache = apiData;
         return cache;
       }
@@ -60,12 +62,13 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
   try {
     const { loadFromDB } = await import('./db');
     const dbData = await loadFromDB();
-    if (dbData) { cache = dbData; return cache; }
+    if (dbData) { dbData.meta.source = 'local'; cache = dbData; return cache; }
   } catch {}
 
   // 3. Fallback to demo data
   const res = await fetch('/data/bookmarks.json');
   cache = await res.json();
+  cache!.meta.source = 'demo';
   return cache!;
 }
 
