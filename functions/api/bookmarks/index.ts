@@ -20,7 +20,13 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const analyticsData = JSON.parse(analytics.data);
-  const meta = analyticsData.meta || { totalBookmarks: 0, dateRange: null, totalAuthors: 0, syncedAt: analytics.synced_at };
+  const meta = {
+    totalBookmarks: analyticsData.meta?.totalBookmarks || 0,
+    dateRange: analyticsData.meta?.dateRange || null,
+    totalAuthors: analyticsData.meta?.totalAuthors || 0,
+    syncedAt: analyticsData.meta?.syncedAt || analytics.synced_at,
+    source: 'api',
+  };
 
   // Get all bookmarks
   const { results } = await db.prepare(
