@@ -2,10 +2,28 @@ import { useI18n } from '../lib/i18n';
 import type { BookmarksData } from '../lib/data';
 import { getReadCount } from '../lib/read-status';
 
+function formatDate(dateStr: string | undefined, locale: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+  });
+}
+
+function formatShortDate(dateStr: string | undefined, locale: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+    month: 'short', day: 'numeric',
+  });
+}
+
 interface Props { data: BookmarksData }
 
 export default function Hero({ data }: Props) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { meta } = data;
   const totalLikes = data.bookmarks.reduce((s, b) => s + b.engagement.likeCount, 0);
   const totalBookmarks = data.bookmarks.reduce((s, b) => s + b.engagement.bookmarkCount, 0);
@@ -19,7 +37,7 @@ export default function Hero({ data }: Props) {
   const stats = [
     { label: h.totalBookmarks, value: meta.totalBookmarks.toLocaleString(), icon: '🔖' },
     { label: h.totalAuthors, value: meta.totalAuthors, icon: '👤' },
-    ...(dateStart && dateEnd ? [{ label: h.dateSpan, value: dateStart.slice(5) + ' ~ ' + dateEnd.slice(5), icon: '📅' }] : []),
+    ...(dateStart && dateEnd ? [{ label: h.dateSpan, value: formatShortDate(dateStart, locale) + ' ~ ' + formatShortDate(dateEnd, locale), icon: '📅' }] : []),
     { label: h.avgLikes, value: avgLikes.toLocaleString(), icon: '❤️' },
     { label: h.totalEngBookmarks, value: totalBookmarks.toLocaleString(), icon: '📊' },
     { label: h.readRate, value: `${readRate}%`, icon: '📖' },
@@ -32,8 +50,8 @@ export default function Hero({ data }: Props) {
           X Bookmarks
         </h1>
         <p className="text-[13px] mb-8 animate-fade-up delay-1" style={{ color: 'var(--text-secondary)' }}>
-          {dateStart && dateEnd ? `${dateStart} ~ ${dateEnd} · ` : ''}
-          {t.loading === '加载中...' ? '已同步于' : 'Synced'} {meta.syncedAt?.split('T')[0] || '—'}
+          {dateStart && dateEnd ? `${formatDate(dateStart, locale)} ~ ${formatDate(dateEnd, locale)} · ` : ''}
+          {locale === 'zh' ? '已同步于' : 'Synced'} {meta.syncedAt?.split('T')[0] || '—'}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {stats.map((s, i) => (

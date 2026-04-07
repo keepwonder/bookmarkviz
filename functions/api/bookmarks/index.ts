@@ -29,12 +29,16 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   // Build meta from stored value, fall back to computing from actual bookmarks
   const storedMeta = analyticsData.meta;
   const authorSet = new Set(results.map((r: any) => r.author_handle));
-  const postedDates = results.map((r: any) => r.posted_at).sort();
+  const isoDates = results
+    .map((r: any) => new Date(r.posted_at))
+    .filter((d: Date) => !isNaN(d.getTime()))
+    .sort((a: Date, b: Date) => a.getTime() - b.getTime());
+  const fmtDate = (d: Date) => d.toISOString().split('T')[0];
   const meta = {
     totalBookmarks: storedMeta?.totalBookmarks || results.length,
-    dateRange: storedMeta?.dateRange || (postedDates.length >= 2
-      ? [postedDates[0].slice(0, 10), postedDates[postedDates.length - 1].slice(0, 10)]
-      : postedDates.length === 1 ? [postedDates[0].slice(0, 10), postedDates[0].slice(0, 10)] : null),
+    dateRange: storedMeta?.dateRange || (isoDates.length >= 2
+      ? [fmtDate(isoDates[0]), fmtDate(isoDates[isoDates.length - 1])]
+      : isoDates.length === 1 ? [fmtDate(isoDates[0]), fmtDate(isoDates[0])] : null),
     totalAuthors: storedMeta?.totalAuthors || authorSet.size,
     syncedAt: storedMeta?.syncedAt || analytics.synced_at,
     source: 'api',
