@@ -49,6 +49,19 @@ function isNewer(a: BookmarksData, b: BookmarksData): boolean {
   return ta > tb;
 }
 
+// Background: check if API has newer data, silently update cache for next load
+function backgroundSyncCheck(isAuthenticated: boolean): void {
+  if (!isAuthenticated) return;
+  import('./api').then(({ getBookmarks }) => getBookmarks()).then(apiData => {
+    if (apiData && apiData.bookmarks?.length) {
+      apiData.meta.source = 'api';
+      if (!cache || isNewer(apiData, cache)) {
+        cache = apiData;
+      }
+    }
+  }).catch(() => {});
+}
+
 export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData | null> {
   // Clear cache when auth state changes
   if (isAuthenticated !== lastAuthState) {
@@ -58,39 +71,33 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
 
   if (cache) return cache;
 
-  // Load from API and IndexedDB in parallel, pick the newer one
-  const apiPromise = isAuthenticated
-    ? (async () => {
-        try {
-          const { getBookmarks } = await import('./api');
-          const d = await getBookmarks();
-          if (d && d.bookmarks?.length) { d.meta.source = 'api'; return d; }
-        } catch {}
-        return null;
-      })()
-    : Promise.resolve(null);
+  // 1. Return local IndexedDB data immediately (fast, no network)
+  try {
+    const { loadFromDB } = await import('./db');
+    const localData = await loadFromDB();
+    if (localData) {
+      localData.meta.source = 'local';
+      cache = localData;
+      // Background: check if API has newer data (no await, no UI impact)
+      backgroundSyncCheck(!!isAuthenticated);
+      return cache;
+    }
+  } catch {}
 
-  const localPromise = (async () => {
+  // 2. No local data — wait for API (authenticated user's first load)
+  if (isAuthenticated) {
     try {
-      const { loadFromDB } = await import('./db');
-      const d = await loadFromDB();
-      if (d) { d.meta.source = 'local'; return d; }
+      const { getBookmarks } = await import('./api');
+      const apiData = await getBookmarks();
+      if (apiData && apiData.bookmarks?.length) {
+        apiData.meta.source = 'api';
+        cache = apiData;
+        return cache;
+      }
     } catch {}
-    return null;
-  })();
-
-  const [apiData, localData] = await Promise.all([apiPromise, localPromise]);
-
-  // Pick whichever is newer
-  if (apiData && localData) {
-    cache = isNewer(localData, apiData) ? localData : apiData;
-  } else {
-    cache = apiData || localData;
   }
 
-  if (cache) return cache;
-
-  // Fallback to demo data (unauthenticated only)
+  // 3. Fallback to demo data (unauthenticated only)
   if (!isAuthenticated) {
     const res = await fetch('/data/bookmarks.json');
     cache = await res.json();
