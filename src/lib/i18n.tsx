@@ -44,7 +44,7 @@ const translations = {
       footerBuiltWith: '基于',
       footerPrivacy: '数据存储在本地浏览器',
       footerNoTracking: '不收集任何信息',
-      footerBy: '由',
+      footerBy: '',
     },
     hero: {
       totalBookmarks: '总书签',
@@ -228,7 +228,7 @@ const translations = {
       footerBuiltWith: 'Built with',
       footerPrivacy: 'Data stored in your browser',
       footerNoTracking: 'No data collection',
-      footerBy: 'By',
+      footerBy: '',
     },
     hero: {
       totalBookmarks: 'Bookmarks',

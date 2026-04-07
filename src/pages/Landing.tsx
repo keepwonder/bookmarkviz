@@ -6,7 +6,7 @@ import { useAuth } from '../lib/auth';
 import LoginModal from '../components/LoginModal';
 
 const EXTERNAL_LINKS = {
-  fieldtheory: 'https://github.com/nichochar/fieldtheory',
+  fieldtheory: 'https://github.com/afar1/fieldtheory-cli',
   github: 'https://github.com/keepwonder/bookmarkviz',
   x: 'https://x.com',
   kiang: 'https://kiang.website/',
@@ -316,7 +316,6 @@ export default function Landing() {
             <span>·</span>
             <a href={EXTERNAL_LINKS.x} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>X / Twitter</a>
             <span>·</span>
-            <span>{l.footerBy}</span>
             <a href={EXTERNAL_LINKS.kiang} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Kiang</a>
           </div>
         </div>
