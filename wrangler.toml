@@ -6,7 +6,3 @@ pages_build_output_dir = "dist"
 binding = "DB"
 database_name = "bookmarkviz-db"
 database_id = "efe824ad-ff5a-4b2a-a071-9585efedb8f1"
-
-[vars]
-GITHUB_CLIENT_ID = "Ov23liaFeq4Ur1jSwhb7"
-GOOGLE_CLIENT_ID = "439731375416-2398vq5m0p7436n73md47ludrac5isni.apps.googleusercontent.com
