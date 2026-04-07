@@ -31,7 +31,7 @@ export interface Analytics {
 export interface BookmarksData {
   meta: {
     totalBookmarks: number;
-    dateRange: [string, string];
+    dateRange: [string, string] | undefined;
     totalAuthors: number;
     syncedAt: string;
     source?: 'api' | 'local' | 'demo';

@@ -175,7 +175,7 @@ export function processJsonl(jsonl: string): BookmarksData {
   return {
     meta: {
       totalBookmarks: bookmarks.length,
-      dateRange: [formatDate(dates[0]), formatDate(dates[dates.length - 1])],
+      dateRange: dates.length ? [formatDate(dates[0]), formatDate(dates[dates.length - 1])] : undefined,
       totalAuthors: authorMap.size,
       syncedAt: new Date().toISOString(),
     },
