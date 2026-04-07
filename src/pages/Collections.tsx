@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { loadData } from '../lib/data';
 import type { BookmarksData } from '../lib/data';
 import { useI18n } from '../lib/i18n';
@@ -15,6 +16,12 @@ import BookmarkCard from '../components/BookmarkCard';
 import ConfirmModal from '../components/ConfirmModal';
 
 const EMOJIS = ['📁', '📂', '📌', '⭐', '🔥', '💡', '🎯', '📚', '🛠', '🧪', '✨', '🔖'];
+
+function formatDate(ts: number, locale: string): string {
+  return new Date(ts).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+}
 
 export default function Collections() {
   const [data, setData] = useState<BookmarksData | null>(null);
@@ -84,13 +91,16 @@ export default function Collections() {
           {c.back}
         </button>
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">{activeCollection.emoji}</span>
           <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{activeCollection.name}</h1>
           <span className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
             {activeCollection.bookmarkIds.length} {c.items}
           </span>
         </div>
+        <p className="text-[13px] mb-6" style={{ color: 'var(--text-tertiary)' }}>
+          {c.createdAt} {formatDate(activeCollection.createdAt, locale)}
+        </p>
 
         {activeBookmarks.length > 0 ? (
           <div className="space-y-3">
@@ -113,8 +123,14 @@ export default function Collections() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 text-[15px]" style={{ color: 'var(--text-tertiary)' }}>
-            {c.emptyHint}
+          <div className="text-center py-16">
+            <div className="text-3xl mb-3">📭</div>
+            <p className="text-[15px] mb-4" style={{ color: 'var(--text-tertiary)' }}>{c.emptyHint}</p>
+            <Link to="/explore"
+              className="inline-block px-5 py-2 rounded-full text-[14px] font-bold text-white"
+              style={{ background: 'var(--accent)' }}>
+              {c.goExplore}
+            </Link>
           </div>
         )}
       </main>
@@ -235,14 +251,21 @@ export default function Collections() {
                 <h3 className="mt-3 text-[15px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{col.name}</h3>
               )}
               <p className="mt-1 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
-                {col.bookmarkIds.length} {c.items}
+                {col.bookmarkIds.length} {c.items} · {formatDate(col.createdAt, locale)}
               </p>
             </button>
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 text-[15px]" style={{ color: 'var(--text-tertiary)' }}>
-          {c.empty}
+        <div className="text-center py-16">
+          <div className="text-3xl mb-3">📂</div>
+          <p className="text-[15px] mb-4" style={{ color: 'var(--text-tertiary)' }}>{c.empty}</p>
+          <button
+            onClick={() => setShowCreate(true)}
+            className="px-5 py-2 rounded-full text-[14px] font-bold text-white"
+            style={{ background: 'var(--accent)' }}>
+            + {c.create}
+          </button>
         </div>
       )}
 

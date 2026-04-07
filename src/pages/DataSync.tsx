@@ -42,7 +42,6 @@ export default function DataSync() {
   async function syncToCloud() {
     setCloudSyncing(true);
     try {
-      // Load current data from cache/DB
       const { loadData } = await import('../lib/data');
       const data = await loadData(true);
       if (!data || !data.bookmarks.length) {
@@ -50,19 +49,16 @@ export default function DataSync() {
         return;
       }
 
-      // Upload bookmarks + analytics
       await putBookmarks(data);
 
-      // Migrate local collections, notes, read-status
       const collections = getCollections();
       const notes = loadNotes();
       const readSet = loadReadSet();
-      const readStatus = [...readSet];
 
       await migrateData({
         bookmarks: data.bookmarks,
         analytics: data.analytics,
-        readStatus,
+        readStatus: [...readSet],
         collections,
         notes,
       });
@@ -84,10 +80,11 @@ export default function DataSync() {
   }
 
   return (
-    <main className="max-w-[600px] mx-auto px-5 py-16">
+    <main className="max-w-[600px] mx-auto px-5 py-12">
       <h1 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{s.title}</h1>
-      <p className="text-[15px] mb-8" style={{ color: 'var(--text-secondary)' }}>{s.subtitle}</p>
+      <p className="text-[15px] mb-6" style={{ color: 'var(--text-secondary)' }}>{s.subtitle}</p>
 
+      {/* Upload zone */}
       <div
         className={`rounded-2xl p-10 text-center cursor-pointer transition-all duration-200`}
         style={{
@@ -111,6 +108,7 @@ export default function DataSync() {
         <div className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>{s.fileHint}</div>
       </div>
 
+      {/* Status message */}
       {status !== 'idle' && (
         <div className="mt-4 p-4 rounded-xl text-[14px]"
           style={{
@@ -122,27 +120,36 @@ export default function DataSync() {
         </div>
       )}
 
+      {/* Post-upload actions */}
       {status === 'done' && (
-        <div className="flex items-center gap-3 mt-4">
-          <button onClick={() => navigate('/dashboard')}
-            className="px-6 py-2.5 rounded-full text-[15px] font-bold text-white transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent)' }}
-          >{s.viewDashboard}</button>
+        <div className="mt-4">
+          <div className="flex items-center gap-3 mb-4">
+            <button onClick={() => navigate('/dashboard')}
+              className="px-6 py-2.5 rounded-full text-[15px] font-bold text-white transition-opacity hover:opacity-90"
+              style={{ background: 'var(--accent)' }}
+            >{s.viewDashboard}</button>
 
-          {isAuthenticated && !cloudDone && (
-            <button
-              onClick={syncToCloud}
-              disabled={cloudSyncing}
-              className="px-6 py-2.5 rounded-full text-[15px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
-              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
-            >
-              {cloudSyncing ? (locale === 'zh' ? '同步中...' : 'Syncing...') : (locale === 'zh' ? '同步到云端' : 'Sync to Cloud')}
-            </button>
-          )}
-          {cloudDone && (
-            <span className="text-[14px]" style={{ color: 'var(--accent)' }}>
-              ✓ {locale === 'zh' ? '已同步到云端' : 'Synced to cloud'}
-            </span>
+            {isAuthenticated && !cloudDone && (
+              <button
+                onClick={syncToCloud}
+                disabled={cloudSyncing}
+                className="px-6 py-2.5 rounded-full text-[15px] font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+                style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
+              >
+                {cloudSyncing ? (locale === 'zh' ? '同步中...' : 'Syncing...') : (locale === 'zh' ? '同步到云端' : 'Sync to Cloud')}
+              </button>
+            )}
+            {cloudDone && (
+              <span className="text-[14px]" style={{ color: 'var(--success)' }}>
+                ✓ {locale === 'zh' ? '已同步到云端' : 'Synced to cloud'}
+              </span>
+            )}
+          </div>
+
+          {!isAuthenticated && (
+            <p className="text-[13px] p-3 rounded-xl" style={{ background: 'var(--bg-secondary)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>
+              💡 {s.cloudSyncHint}
+            </p>
           )}
         </div>
       )}
@@ -181,7 +188,19 @@ export default function DataSync() {
         </div>
       )}
 
-      <div className="mt-12 rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+      {/* JSONL format explain */}
+      <div className="mt-8 rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+        <h3 className="text-[15px] font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+          {locale === 'zh' ? '什么是 JSONL？' : 'What is JSONL?'}
+        </h3>
+        <p className="text-[14px] mb-3" style={{ color: 'var(--text-secondary)' }}>{s.jsonlExplain}</p>
+        <code className="block text-[12px] px-3 py-2 rounded-lg overflow-x-auto" style={{ background: 'var(--bg)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>
+          {s.jsonlExample}
+        </code>
+      </div>
+
+      {/* Steps */}
+      <div className="mt-8 rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
         <h3 className="text-[15px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{s.stepsTitle}</h3>
         <ol className="space-y-3 text-[14px]" style={{ color: 'var(--text-secondary)' }}>
           <li className="flex gap-3"><span className="w-5 h-5 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0" style={{ background: 'var(--accent)', color: '#fff' }}>1</span>{s.step1} <code style={{ color: 'var(--accent)', background: 'var(--accent-bg)', padding: '2px 6px', borderRadius: '4px', fontSize: '13px' }}>ft sync</code></li>
@@ -189,6 +208,12 @@ export default function DataSync() {
           <li className="flex gap-3"><span className="w-5 h-5 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0" style={{ background: 'var(--accent)', color: '#fff' }}>3</span>{s.step3}</li>
           <li className="flex gap-3"><span className="w-5 h-5 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0" style={{ background: 'var(--accent)', color: '#fff' }}>4</span>{s.step4}</li>
         </ol>
+        <div className="mt-4">
+          <a href="https://github.com/afar1/fieldtheory-cli" target="_blank" rel="noopener noreferrer"
+            className="text-[14px] font-medium hover:underline" style={{ color: 'var(--accent)' }}>
+            fieldtheory-cli on GitHub →
+          </a>
+        </div>
       </div>
     </main>
   );
