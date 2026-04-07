@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
+import { useAuth } from '../lib/auth';
 
 export default function Landing() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
+  const { loading, login, isAuthenticated } = useAuth();
   const l = t.landing;
 
   return (
@@ -95,13 +97,33 @@ export default function Landing() {
           {l.subtitle}
         </p>
 
-        <Link
-          to="/dashboard"
-          className="px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95 animate-fade-in delay-3"
-          style={{ background: 'var(--accent)' }}
-        >
-          {l.cta}
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center gap-3 animate-fade-in delay-3">
+          <Link
+            to="/dashboard"
+            className="px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
+            style={{ background: 'var(--accent)' }}
+          >
+            {l.cta}
+          </Link>
+          {!loading && !isAuthenticated && (
+            <button
+              onClick={() => login('github')}
+              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95"
+              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
+            >
+              {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
+            </button>
+          )}
+          {isAuthenticated && (
+            <Link
+              to="/dashboard"
+              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95"
+              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
+            >
+              {locale === 'zh' ? '进入我的数据' : 'Go to My Data'}
+            </Link>
+          )}
+        </div>
       </header>
 
       {/* Features */}

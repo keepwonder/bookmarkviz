@@ -41,15 +41,29 @@ export interface BookmarksData {
 
 let cache: BookmarksData | null = null;
 
-export async function loadData(): Promise<BookmarksData> {
+export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData> {
   if (cache) return cache;
 
+  // 1. If authenticated, try API first
+  if (isAuthenticated) {
+    try {
+      const { getBookmarks } = await import('./api');
+      const apiData = await getBookmarks();
+      if (apiData && apiData.bookmarks?.length) {
+        cache = apiData;
+        return cache;
+      }
+    } catch {}
+  }
+
+  // 2. Try local IndexedDB
   try {
     const { loadFromDB } = await import('./db');
     const dbData = await loadFromDB();
     if (dbData) { cache = dbData; return cache; }
   } catch {}
 
+  // 3. Fallback to demo data
   const res = await fetch('/data/bookmarks.json');
   cache = await res.json();
   return cache!;
@@ -57,6 +71,10 @@ export async function loadData(): Promise<BookmarksData> {
 
 export function setData(data: BookmarksData): void {
   cache = data;
+}
+
+export function clearCache(): void {
+  cache = null;
 }
 
 export function parseDate(dateStr: string): Date {

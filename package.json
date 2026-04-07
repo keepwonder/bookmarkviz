@@ -11,6 +11,8 @@
     "prepare-data": "npx tsx scripts/prepare-data.ts"
   },
   "dependencies": {
+    "arctic": "^3.7.0",
+    "drizzle-orm": "^0.45.2",
     "echarts": "^5.6.0",
     "echarts-wordcloud": "^2.1.0",
     "react": "^19.2.4",
@@ -18,12 +20,14 @@
     "react-router-dom": "^7.14.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260405.1",
     "@eslint/js": "^9.39.4",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
+import { useAuth } from '../lib/auth';
 
 const NAV_KEYS = ['dashboard', 'explore', 'collections', 'sync', 'about'] as const;
 const NAV_PATHS = ['/dashboard', '/explore', '/collections', '/sync', '/about'];
@@ -10,7 +11,9 @@ export default function Layout() {
   const { pathname } = useLocation();
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -105,6 +108,52 @@ export default function Layout() {
                 </button>
               ))}
             </div>
+
+            {/* User menu */}
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
+                >
+                  {user.avatarUrl ? (
+                    <img src={user.avatarUrl} alt={user.name} className="w-8 h-8 rounded-full" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold text-white" style={{ background: 'var(--accent)' }}>
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </button>
+                {userMenuOpen && (
+                  <div
+                    className="absolute right-0 top-10 w-48 rounded-xl shadow-lg z-50 py-1 animate-scale-in overflow-hidden"
+                    style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+                  >
+                    <div className="px-3 py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                      <p className="text-[14px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
+                      {user.email && <p className="text-[12px] truncate" style={{ color: 'var(--text-tertiary)' }}>{user.email}</p>}
+                    </div>
+                    <button
+                      onClick={() => { logout(); setUserMenuOpen(false); }}
+                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      {locale === 'zh' ? '退出登录' : 'Log out'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/"
+                className="px-4 py-1.5 rounded-full text-[13px] font-bold transition-opacity hover:opacity-90"
+                style={{ background: 'var(--accent)', color: '#fff' }}
+              >
+                {locale === 'zh' ? '登录' : 'Login'}
+              </Link>
+            )}
           </div>
 
           {/* Mobile hamburger */}
