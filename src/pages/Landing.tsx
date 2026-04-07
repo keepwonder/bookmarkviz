@@ -8,7 +8,7 @@ import LoginModal from '../components/LoginModal';
 export default function Landing() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
-  const { loading, isAuthenticated } = useAuth();
+  const { loading, user, isAuthenticated } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const l = t.landing;
@@ -94,6 +94,32 @@ export default function Landing() {
             >{icon}</button>
           ))}
         </div>
+
+        {/* User info / Login */}
+        {!loading && isAuthenticated && user ? (
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-opacity hover:opacity-90"
+            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)' }}
+          >
+            {user.avatarUrl ? (
+              <img src={user.avatarUrl} alt={user.name} className="w-6 h-6 rounded-full" />
+            ) : (
+              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent)' }}>
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="text-[13px] font-medium max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</span>
+          </Link>
+        ) : !loading ? (
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="px-4 py-1.5 rounded-full text-[13px] font-bold text-white cursor-pointer transition-opacity hover:opacity-90"
+            style={{ background: 'var(--accent)' }}
+          >
+            {locale === 'zh' ? '登录' : 'Login'}
+          </button>
+        ) : null}
       </div>
 
       {/* Hero */}
@@ -128,7 +154,9 @@ export default function Landing() {
             className="px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
             style={{ background: 'var(--accent)' }}
           >
-            {l.cta}
+            {isAuthenticated
+              ? (locale === 'zh' ? '进入我的数据' : 'Go to My Data')
+              : l.cta}
           </Link>
           {!loading && !isAuthenticated && (
             <button
@@ -138,15 +166,6 @@ export default function Landing() {
             >
               {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
             </button>
-          )}
-          {isAuthenticated && (
-            <Link
-              to="/dashboard"
-              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95"
-              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
-            >
-              {locale === 'zh' ? '进入我的数据' : 'Go to My Data'}
-            </Link>
           )}
         </div>
       </header>
