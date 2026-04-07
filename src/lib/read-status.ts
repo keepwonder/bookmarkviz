@@ -51,3 +51,6 @@ export function toggleRead(id: string): boolean {
     return true;
   }
 }
+
+// Export raw set for cloud migration
+export { loadReadSet };

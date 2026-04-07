@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { loadData } from '../lib/data';
 import type { BookmarksData } from '../lib/data';
 import { useI18n } from '../lib/i18n';
+import { useAuth } from '../lib/auth';
 import { isRead, markAsRead } from '../lib/read-status';
 import { getAllCachedContent } from '../lib/content-fetcher';
 import { getCollections, addToCollection, type Collection } from '../lib/collections';
@@ -31,9 +32,10 @@ export default function Explore() {
   const [showFilters, setShowFilters] = useState(false);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
   const e = t.explore;
 
-  useEffect(() => { loadData().then(setData); }, []);
+  useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
   useEffect(() => {
     getAllCachedContent().then(entries => {

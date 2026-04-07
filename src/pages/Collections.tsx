@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { loadData } from '../lib/data';
 import type { BookmarksData } from '../lib/data';
 import { useI18n } from '../lib/i18n';
+import { useAuth } from '../lib/auth';
 import {
   getCollections,
   createCollection,
@@ -24,9 +25,10 @@ export default function Collections() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
   const c = t.collections;
 
-  useEffect(() => { loadData().then(setData); }, []);
+  useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
   const refresh = () => setCollections(getCollections());
 

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { loadData } from '../lib/data';
 import type { BookmarksData } from '../lib/data';
 import { useI18n } from '../lib/i18n';
+import { useAuth } from '../lib/auth';
 import Hero from '../components/Hero';
 
 const CalendarHeatmap = lazy(() => import('../components/charts/CalendarHeatmap'));
@@ -32,8 +33,9 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
 export default function Home() {
   const [data, setData] = useState<BookmarksData | null>(null);
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
 
-  useEffect(() => { loadData().then(setData); }, []);
+  useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
   if (!data) {
     return (

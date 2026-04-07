@@ -2,7 +2,7 @@
 
 const STORAGE_KEY = 'bookmark-notes';
 
-function loadNotes(): Record<string, string> {
+function loadFromStorage(): Record<string, string> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
@@ -16,11 +16,11 @@ function saveNotes(notes: Record<string, string>): void {
 }
 
 export function getNote(id: string): string {
-  return loadNotes()[id] || '';
+  return loadFromStorage()[id] || '';
 }
 
 export function setNote(id: string, text: string): void {
-  const notes = loadNotes();
+  const notes = loadFromStorage();
   if (text.trim()) {
     notes[id] = text;
   } else {
@@ -30,11 +30,16 @@ export function setNote(id: string, text: string): void {
 }
 
 export function deleteNote(id: string): void {
-  const notes = loadNotes();
+  const notes = loadFromStorage();
   delete notes[id];
   saveNotes(notes);
 }
 
 export function hasNote(id: string): boolean {
-  return !!loadNotes()[id];
+  return !!loadFromStorage()[id];
+}
+
+// Export all notes for cloud migration
+export function loadNotes(): Record<string, string> {
+  return loadFromStorage();
 }
