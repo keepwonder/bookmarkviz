@@ -2,6 +2,17 @@ import { useState, useRef } from 'react';
 import { useI18n } from '../lib/i18n';
 import { exportData, importData } from '../lib/export';
 
+const LINKS = {
+  fieldtheory: 'https://github.com/afar1/fieldtheory-cli',
+  github: 'https://github.com/keepwonder/bookmarkviz',
+  react: 'https://react.dev',
+  echarts: 'https://echarts.apache.org',
+  tailwindcss: 'https://tailwindcss.com',
+  cloudflare: 'https://pages.cloudflare.com',
+  typescript: 'https://www.typescriptlang.org',
+  vite: 'https://vite.dev',
+};
+
 export default function About() {
   const { t, locale } = useI18n();
   const a = t.about;
@@ -20,76 +31,114 @@ export default function About() {
     reader.readAsText(file);
   };
 
-  const sections = [
-    { title: a.whatTitle, items: [a.whatDesc] },
-    { title: a.dataSourceTitle, items: [a.dataSourceDesc, a.dataSourceInfo, `• ${a.dataInfo1}`, `• ${a.dataInfo2}`, `• ${a.dataInfo3}`, `• ${a.dataInfo4}`] },
-    { title: a.privacyTitle, items: [`• ${a.privacy1}`, `• ${a.privacy2}`, `• ${a.privacy3}`, `• ${a.privacy4}`] },
-    { title: a.featureTitle, items: [
-      { sub: a.dashboardTitle, items: [a.dashboardDesc, `• ${a.dashStat}`, `• ${a.dashHeatmap}`, `• ${a.dashRank}`, `• ${a.dashType}`, `• ${a.dashWord}`, `• ${a.dashAuthor}`, `• ${a.dashTrend}`] },
-      { sub: a.exploreTitle, items: [a.exploreDesc, `• ${a.exp1}`, `• ${a.exp2}`, `• ${a.exp3}`, `• ${a.exp4}`] },
-      { sub: a.syncTitle, items: [a.syncDesc, `• ${a.sync1}`, `• ${a.sync2}`, `• ${a.sync3}`, `• ${a.sync4}`] },
-    ]},
-    { title: a.updateTitle, items: [`1. ${a.update1}`, `2. ${a.update2}`, `3. ${a.update3}`, `4. ${a.update4}`] },
+  const techStack = [
+    { name: 'React 19', href: LINKS.react },
+    { name: 'TypeScript', href: LINKS.typescript },
+    { name: 'Vite', href: LINKS.vite },
+    { name: 'ECharts', href: LINKS.echarts },
+    { name: 'Tailwind CSS v4', href: LINKS.tailwindcss },
+    { name: 'Cloudflare Pages', href: LINKS.cloudflare },
   ];
+
+  const steps = [a.update1, a.update2, a.update3, a.update4];
 
   return (
     <main className="max-w-[700px] mx-auto px-5 py-12">
-      <h1 className="text-xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>{a.title}</h1>
+      <h1 className="text-xl font-bold mb-10" style={{ color: 'var(--text-primary)' }}>{a.title}</h1>
 
-      {sections.map((section, i) => (
-        <section key={i} className="mb-8">
-          <h2 className="text-[17px] font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{section.title}</h2>
-          {section.title === a.techTitle ? (
-            <div className="flex flex-wrap gap-2">
-              {['React 19', 'TypeScript', 'Vite', 'ECharts', 'Tailwind CSS v4', 'Cloudflare Pages'].map(tech => (
-                <span key={tech} className="px-4 py-1.5 rounded-full text-[13px] font-medium"
-                  style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent-bg)' }}
-                >{tech}</span>
-              ))}
-            </div>
-          ) : section.title === a.featureTitle ? (
-            <div className="space-y-6">
-              {(section.items as { sub: string; items: string[] }[]).map((sub, j) => (
-                <div key={j} className="rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                  <h3 className="text-[15px] font-bold mb-2" style={{ color: 'var(--accent)' }}>{sub.sub}</h3>
-                  <div className="text-[14px] space-y-1" style={{ color: 'var(--text-secondary)' }}>
-                    {sub.items.map((line, k) => <p key={k}>{line}</p>)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-[15px] space-y-2" style={{ color: 'var(--text-secondary)' }}>
-              {(section.items as string[]).map((item, j) => <p key={j}>{item}</p>)}
-            </div>
-          )}
-        </section>
-      ))}
+      {/* What */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{a.whatTitle}</h2>
+        <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{a.whatDesc}</p>
+        <div className="mt-3">
+          <a href={LINKS.github} target="_blank" rel="noopener noreferrer"
+            className="text-[14px] font-medium hover:underline" style={{ color: 'var(--accent)' }}
+          >{a.openSourceTitle} →</a>
+        </div>
+      </section>
 
-      {/* Data Export/Import */}
+      {/* Data Source */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{a.dataSourceTitle}</h2>
+        <p className="text-[15px] leading-relaxed mb-3" style={{ color: 'var(--text-secondary)' }}>{a.dataSourceDesc}</p>
+        <p className="text-[14px] mb-2" style={{ color: 'var(--text-secondary)' }}>{a.dataSourceInfo}</p>
+        <ul className="text-[14px] space-y-1 pl-4" style={{ color: 'var(--text-tertiary)', listStyle: 'disc' }}>
+          <li>{a.dataInfo1}</li>
+          <li>{a.dataInfo2}</li>
+          <li>{a.dataInfo3}</li>
+          <li>{a.dataInfo4}</li>
+        </ul>
+        <div className="mt-3">
+          <a href={LINKS.fieldtheory} target="_blank" rel="noopener noreferrer"
+            className="text-[14px] font-medium hover:underline" style={{ color: 'var(--accent)' }}
+          >fieldtheory-cli →</a>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{a.featureTitle}</h2>
+        <div className="grid gap-3">
+          {[
+            { icon: '📊', title: a.dashboardTitle, desc: a.dashboardDesc },
+            { icon: '🔍', title: a.exploreTitle, desc: a.exploreDesc },
+            { icon: '☁️', title: a.syncTitle, desc: a.syncDesc },
+          ].map((f, i) => (
+            <div key={i} className="rounded-2xl p-4 flex items-start gap-3"
+              style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+              <span className="text-lg">{f.icon}</span>
+              <div>
+                <h3 className="text-[15px] font-bold" style={{ color: 'var(--accent)' }}>{f.title}</h3>
+                <p className="text-[14px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Privacy */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{a.privacyTitle}</h2>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[a.privacy1, a.privacy2, a.privacy3, a.privacy4].map((text, i) => (
+            <div key={i} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+              <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{a.techTitle}</h2>
+        <div className="flex flex-wrap gap-2">
+          {techStack.map(tech => (
+            <a key={tech.name} href={tech.href} target="_blank" rel="noopener noreferrer"
+              className="px-4 py-1.5 rounded-full text-[13px] font-medium transition-colors"
+              style={{ background: 'var(--accent-bg)', color: 'var(--accent)', border: '1px solid var(--accent-bg)' }}
+            >{tech.name}</a>
+          ))}
+        </div>
+      </section>
+
+      {/* Data Management */}
       <section className="mb-8">
         <h2 className="text-[17px] font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
           {locale === 'zh' ? '数据管理' : 'Data Management'}
         </h2>
         <div className="rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
           <p className="text-[14px] mb-4" style={{ color: 'var(--text-secondary)' }}>
-            {locale === 'zh'
-              ? '导出或导入你的阅读状态、合集和笔记数据。'
-              : 'Export or import your read status, collections, and notes.'}
+            {locale === 'zh' ? '导出或导入你的阅读状态、合集和笔记数据。' : 'Export or import your read status, collections, and notes.'}
           </p>
           <div className="flex items-center gap-3 flex-wrap">
-            <button
-              onClick={exportData}
+            <button onClick={exportData}
               className="px-5 py-2 rounded-full text-[14px] font-bold text-white cursor-pointer transition-opacity hover:opacity-90"
-              style={{ background: 'var(--accent)' }}
-            >
+              style={{ background: 'var(--accent)' }}>
               {locale === 'zh' ? '导出数据' : 'Export Data'}
             </button>
-            <button
-              onClick={() => fileRef.current?.click()}
+            <button onClick={() => fileRef.current?.click()}
               className="px-5 py-2 rounded-full text-[14px] font-bold cursor-pointer transition-colors"
-              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
-            >
+              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}>
               {locale === 'zh' ? '导入数据' : 'Import Data'}
             </button>
             <input ref={fileRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
@@ -99,6 +148,38 @@ export default function About() {
               {importMsg}
             </p>
           )}
+        </div>
+      </section>
+
+      {/* Getting Started */}
+      <section className="mb-8">
+        <h2 className="text-[17px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{a.updateTitle}</h2>
+        <ol className="space-y-3">
+          {steps.map((step, i) => (
+            <li key={i} className="flex gap-3 items-start">
+              <span className="w-6 h-6 rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0"
+                style={{ background: 'var(--accent)', color: '#fff' }}>{i + 1}</span>
+              <span className="text-[14px] pt-0.5" style={{ color: 'var(--text-secondary)' }}>{step}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-4">
+          <a href={LINKS.fieldtheory} target="_blank" rel="noopener noreferrer"
+            className="text-[14px] font-medium hover:underline" style={{ color: 'var(--accent)' }}
+          >fieldtheory-cli on GitHub →</a>
+        </div>
+      </section>
+
+      {/* Credits */}
+      <section className="mb-4 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="text-center">
+          <p className="text-[14px] mb-2" style={{ color: 'var(--text-secondary)' }}>{a.contributeDesc}</p>
+          <div className="flex items-center justify-center gap-4 mt-3">
+            <a href={LINKS.github} target="_blank" rel="noopener noreferrer"
+              className="text-[14px] font-medium hover:underline" style={{ color: 'var(--accent)' }}>GitHub</a>
+            <a href={LINKS.fieldtheory} target="_blank" rel="noopener noreferrer"
+              className="text-[14px] font-medium hover:underline" style={{ color: 'var(--text-secondary)' }}>fieldtheory-cli</a>
+          </div>
         </div>
       </section>
     </main>
