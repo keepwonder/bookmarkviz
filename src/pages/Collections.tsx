@@ -12,6 +12,7 @@ import {
   type Collection,
 } from '../lib/collections';
 import BookmarkCard from '../components/BookmarkCard';
+import ConfirmModal from '../components/ConfirmModal';
 
 const EMOJIS = ['📁', '📂', '📌', '⭐', '🔥', '💡', '🎯', '📚', '🛠', '🧪', '✨', '🔖'];
 
@@ -24,7 +25,8 @@ export default function Collections() {
   const [newEmoji, setNewEmoji] = useState('📁');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
-  const { t } = useI18n();
+  const [confirmAction, setConfirmAction] = useState<{ type: 'delete' | 'remove'; id: string; bookmarkId?: string } | null>(null);
+  const { t, locale } = useI18n();
   const { isAuthenticated } = useAuth();
   const c = t.collections;
 
@@ -44,6 +46,7 @@ export default function Collections() {
   const handleDelete = (id: string) => {
     deleteCollection(id);
     if (activeId === id) setActiveId(null);
+    setConfirmAction(null);
     refresh();
   };
 
@@ -95,7 +98,7 @@ export default function Collections() {
               <div key={b.id} className="relative">
                 <BookmarkCard bookmark={b} />
                 <button
-                  onClick={() => { removeFromCollection(activeCollection.id, b.id); refresh(); }}
+                  onClick={() => setConfirmAction({ type: 'remove', id: activeCollection.id, bookmarkId: b.id })}
                   className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
                   style={{ color: 'var(--text-tertiary)', background: 'var(--bg-secondary)' }}
                   title={c.remove}
@@ -203,7 +206,7 @@ export default function Collections() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(col.id)}
+                    onClick={() => setConfirmAction({ type: 'delete', id: col.id })}
                     className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
                     style={{ color: 'var(--text-tertiary)' }}
                     onMouseEnter={e => { e.currentTarget.style.color = '#f4212e'; }}
@@ -242,6 +245,33 @@ export default function Collections() {
           {c.empty}
         </div>
       )}
+
+      <ConfirmModal
+        open={!!confirmAction}
+        title={
+          confirmAction?.type === 'delete'
+            ? (locale === 'zh' ? '删除合集' : 'Delete Collection')
+            : (locale === 'zh' ? '移出合集' : 'Remove from Collection')
+        }
+        message={
+          confirmAction?.type === 'delete'
+            ? (locale === 'zh' ? '确定要删除这个合集吗？此操作不可撤销。' : 'Are you sure you want to delete this collection? This cannot be undone.')
+            : (locale === 'zh' ? '确定要将这条书签从合集中移除吗？' : 'Are you sure you want to remove this bookmark from the collection?')
+        }
+        confirmLabel={confirmAction?.type === 'delete' ? c.deleteLabel : c.remove}
+        destructive
+        onConfirm={() => {
+          if (!confirmAction) return;
+          if (confirmAction.type === 'delete') {
+            handleDelete(confirmAction.id);
+          } else {
+            removeFromCollection(confirmAction.id, confirmAction.bookmarkId!);
+            setConfirmAction(null);
+            refresh();
+          }
+        }}
+        onCancel={() => setConfirmAction(null)}
+      />
     </main>
   );
 }

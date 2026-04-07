@@ -2,8 +2,12 @@
 
 import { getAuthorizationUrl, randomState } from '../../lib/oauth';
 import type { Env } from '../../lib/auth';
+import { checkRateLimit } from '../../lib/rate-limit';
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 10, windowMs: 60_000 });
+  if (rateLimitResponse) return rateLimitResponse;
+
   const url = new URL(request.url);
   const provider = url.searchParams.get('provider');
 

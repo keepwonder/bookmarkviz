@@ -16,7 +16,7 @@ export default function Explore() {
   const [data, setData] = useState<BookmarksData | null>(null);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [authorFilter] = useState('');
+  const [authorFilter, setAuthorFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [readFilter, setReadFilter] = useState<ReadFilter>('all');
   const [sort, setSort] = useState<SortKey>('date');
@@ -216,6 +216,31 @@ export default function Explore() {
 
       {/* Filter chips */}
       <div className={`flex flex-wrap gap-2 mb-5 ${showFilters ? '' : 'max-sm:hidden'}`}>
+        {/* Author filter */}
+        {data && (() => {
+          const authors = [...new Map(data.bookmarks.map(b => [b.authorHandle, b.authorName])).entries()]
+            .sort((a, b) => a[1].localeCompare(b[1]));
+          return authors.length > 1 ? (
+            <select
+              value={authorFilter}
+              onChange={ev => setAuthorFilter(ev.target.value)}
+              className="px-3 py-1.5 rounded-full text-[14px] outline-none cursor-pointer appearance-none max-w-[160px] truncate"
+              style={{
+                background: authorFilter ? 'var(--accent)' : 'transparent',
+                color: authorFilter ? '#fff' : 'var(--text-secondary)',
+                border: `1px solid ${authorFilter ? 'var(--accent)' : 'var(--border)'}`,
+              }}
+            >
+              <option value="" style={{ color: 'var(--text-primary)', background: 'var(--bg-secondary)' }}>{e.allAuthors}</option>
+              {authors.map(([handle, name]) => (
+                <option key={handle} value={handle} style={{ color: 'var(--text-primary)', background: 'var(--bg-secondary)' }}>@{handle}{name !== handle ? ` ${name}` : ''}</option>
+              ))}
+            </select>
+          ) : null;
+        })()}
+
+        <span className="mx-1" style={{ borderLeft: '1px solid var(--border)' }} />
+
         {([
           { value: '', label: e.allTypes },
           { value: 'article', label: e.typeArticle },

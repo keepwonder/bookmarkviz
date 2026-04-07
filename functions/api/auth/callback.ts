@@ -4,6 +4,7 @@ import { exchangeCode, fetchUserProfile } from '../../lib/oauth';
 import { createSessionData, createSessionCookie } from '../../lib/session';
 import { ensureUser, type Env } from '../../lib/auth';
 import { getDB } from '../../lib/db';
+import { checkRateLimit } from '../../lib/rate-limit';
 
 function readOAuthCookie(request: Request): { s: string; p: string } | null {
   try {
@@ -17,6 +18,9 @@ function readOAuthCookie(request: Request): { s: string; p: string } | null {
 }
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 20, windowMs: 60_000 });
+  if (rateLimitResponse) return rateLimitResponse;
+
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
 
