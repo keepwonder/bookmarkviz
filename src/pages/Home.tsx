@@ -33,7 +33,7 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
 export default function Home() {
   const [data, setData] = useState<BookmarksData | null>(null);
   const { t, locale } = useI18n();
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
@@ -53,19 +53,15 @@ export default function Home() {
       {/* Demo banner */}
       {isDemo && (
         <div
-          className="flex items-center justify-between gap-3 rounded-xl px-5 py-3 mb-5 animate-fade-in"
+          className="flex items-center gap-2 rounded-xl px-5 py-3 mb-5 animate-fade-in"
           style={{ background: 'var(--accent-bg)', border: '1px solid var(--accent)' }}
         >
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth={2}>
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+          </svg>
           <span className="text-[14px]" style={{ color: 'var(--accent)' }}>
-            {locale === 'zh' ? '你正在查看演示数据' : 'You are viewing demo data'}
+            {locale === 'zh' ? '你正在查看演示数据，点击右上角「登录」查看自己的书签' : 'You are viewing demo data. Click "Login" in the top-right to see your own bookmarks.'}
           </span>
-          <button
-            onClick={() => login('github')}
-            className="px-4 py-1.5 rounded-full text-[13px] font-bold text-white cursor-pointer shrink-0"
-            style={{ background: 'var(--accent)' }}
-          >
-            {locale === 'zh' ? '登录查看自己的书签' : 'Login to See Yours'}
-          </button>
         </div>
       )}
 
