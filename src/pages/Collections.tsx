@@ -259,13 +259,7 @@ export default function Collections() {
       ) : (
         <div className="text-center py-16">
           <div className="text-3xl mb-3">📂</div>
-          <p className="text-[15px] mb-4" style={{ color: 'var(--text-tertiary)' }}>{c.empty}</p>
-          <button
-            onClick={() => setShowCreate(true)}
-            className="px-5 py-2 rounded-full text-[14px] font-bold text-white"
-            style={{ background: 'var(--accent)' }}>
-            + {c.create}
-          </button>
+          <p className="text-[15px]" style={{ color: 'var(--text-tertiary)' }}>{c.empty}</p>
         </div>
       )}
 
