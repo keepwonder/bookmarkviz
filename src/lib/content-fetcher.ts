@@ -1,4 +1,4 @@
-// Fetch external URL content via Jina Reader API and cache in IndexedDB
+import { CONTENT_CACHE_TTL, MAX_CONTENT_LENGTH, PREFETCH_CONCURRENCY } from './constants';
 
 interface CachedContent {
   url: string;
@@ -10,7 +10,7 @@ interface CachedContent {
 
 const DB_NAME = 'bookmarkviz';
 const STORE = 'content-cache';
-const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
+const CACHE_TTL = CONTENT_CACHE_TTL;
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -112,7 +112,7 @@ export async function fetchUrlContent(url: string): Promise<FetchedContent> {
     const result: FetchedContent = {
       title: title || new URL(url).hostname,
       description: description || '',
-      content: content.slice(0, 5000), // Cap at 5000 chars
+      content: content.slice(0, MAX_CONTENT_LENGTH),
       fromCache: false,
     };
 
@@ -176,9 +176,10 @@ export async function resolveBookmarkUrl(
 // Batch pre-fetch for a list of URLs
 export async function prefetchUrls(urls: string[]): Promise<void> {
   // Check which are already cached
-  const toFetch = urls.filter(async (url) => !(await getFromCache(url)));
+  const cacheChecks = await Promise.all(urls.map(url => getFromCache(url)));
+  const toFetch = urls.filter((_, i) => !cacheChecks[i]);
   // Fetch up to 3 in parallel
-  for (let i = 0; i < toFetch.length; i += 3) {
+  for (let i = 0; i < toFetch.length; i += PREFETCH_CONCURRENCY) {
     const batch = toFetch.slice(i, i + 3);
     await Promise.all(batch.map(url => fetchUrlContent(url).catch(() => {})));
   }

@@ -7,14 +7,15 @@ import { isRead, markAsRead } from '../lib/read-status';
 import { getAllCachedContent } from '../lib/content-fetcher';
 import { getCollections, addToCollection, type Collection } from '../lib/collections';
 import BookmarkCard from '../components/BookmarkCard';
+import { PAGE_SIZE, DEBOUNCE_MS } from '../lib/constants';
 
 type SortKey = 'date' | 'likes' | 'bookmarks';
 type ReadFilter = 'all' | 'unread' | 'read';
-const PAGE_SIZE = 20;
 
 export default function Explore() {
   const [data, setData] = useState<BookmarksData | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [authorFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [readFilter, setReadFilter] = useState<ReadFilter>('all');
@@ -37,6 +38,12 @@ export default function Explore() {
 
   useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [search]);
+
   useEffect(() => {
     getAllCachedContent().then(entries => {
       const map = new Map<string, string>();
@@ -47,15 +54,15 @@ export default function Explore() {
     });
   }, []);
 
-  useEffect(() => { setPage(1); }, [search, authorFilter, typeFilter, readFilter, sort, readVersion]);
+  useEffect(() => { setPage(1); }, [debouncedSearch, authorFilter, typeFilter, readFilter, sort, readVersion]);
 
   const onReadChange = useCallback(() => setReadVersion(v => v + 1), []);
 
   const filtered = useMemo(() => {
     if (!data) return [];
     let list = [...data.bookmarks];
-    if (search) {
-      const q = search.toLowerCase();
+    if (debouncedSearch) {
+      const q = debouncedSearch.toLowerCase();
       list = list.filter(b => {
         if (b.text.toLowerCase().includes(q)) return true;
         if (b.authorHandle.toLowerCase().includes(q) || b.authorName.toLowerCase().includes(q)) return true;
@@ -81,7 +88,7 @@ export default function Explore() {
       default: break;
     }
     return list;
-  }, [data, search, authorFilter, typeFilter, readFilter, sort, readVersion, cachedContentMap]);
+  }, [data, debouncedSearch, authorFilter, typeFilter, readFilter, sort, readVersion, cachedContentMap]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
