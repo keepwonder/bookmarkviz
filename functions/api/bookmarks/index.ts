@@ -20,18 +20,25 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   const analyticsData = JSON.parse(analytics.data);
-  const meta = {
-    totalBookmarks: analyticsData.meta?.totalBookmarks || 0,
-    dateRange: analyticsData.meta?.dateRange || null,
-    totalAuthors: analyticsData.meta?.totalAuthors || 0,
-    syncedAt: analyticsData.meta?.syncedAt || analytics.synced_at,
-    source: 'api',
-  };
 
   // Get all bookmarks
   const { results } = await db.prepare(
     'SELECT * FROM bookmarks WHERE user_id = ? ORDER BY posted_at DESC'
   ).bind(userId).all();
+
+  // Build meta from stored value, fall back to computing from actual bookmarks
+  const storedMeta = analyticsData.meta;
+  const authorSet = new Set(results.map((r: any) => r.author_handle));
+  const postedDates = results.map((r: any) => r.posted_at).sort();
+  const meta = {
+    totalBookmarks: storedMeta?.totalBookmarks || results.length,
+    dateRange: storedMeta?.dateRange || (postedDates.length >= 2
+      ? [postedDates[0].slice(0, 10), postedDates[postedDates.length - 1].slice(0, 10)]
+      : postedDates.length === 1 ? [postedDates[0].slice(0, 10), postedDates[0].slice(0, 10)] : null),
+    totalAuthors: storedMeta?.totalAuthors || authorSet.size,
+    syncedAt: storedMeta?.syncedAt || analytics.synced_at,
+    source: 'api',
+  };
 
   const bookmarks = results.map((row: any) => ({
     id: row.id,
