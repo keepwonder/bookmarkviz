@@ -43,6 +43,12 @@ export interface BookmarksData {
 let cache: BookmarksData | null = null;
 let lastAuthState: boolean | undefined = undefined;
 
+function isNewer(a: BookmarksData, b: BookmarksData): boolean {
+  const ta = a.meta.syncedAt ? new Date(a.meta.syncedAt).getTime() : 0;
+  const tb = b.meta.syncedAt ? new Date(b.meta.syncedAt).getTime() : 0;
+  return ta > tb;
+}
+
 export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData | null> {
   // Clear cache when auth state changes
   if (isAuthenticated !== lastAuthState) {
@@ -52,28 +58,39 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
 
   if (cache) return cache;
 
-  // 1. If authenticated, try API first
-  if (isAuthenticated) {
+  // Load from API and IndexedDB in parallel, pick the newer one
+  const apiPromise = isAuthenticated
+    ? (async () => {
+        try {
+          const { getBookmarks } = await import('./api');
+          const d = await getBookmarks();
+          if (d && d.bookmarks?.length) { d.meta.source = 'api'; return d; }
+        } catch {}
+        return null;
+      })()
+    : Promise.resolve(null);
+
+  const localPromise = (async () => {
     try {
-      const { getBookmarks } = await import('./api');
-      const apiData = await getBookmarks();
-      if (apiData && apiData.bookmarks?.length) {
-        apiData.meta.source = 'api';
-        cache = apiData;
-        return cache;
-      }
+      const { loadFromDB } = await import('./db');
+      const d = await loadFromDB();
+      if (d) { d.meta.source = 'local'; return d; }
     } catch {}
-    // API returned no data — fall through to local IndexedDB
+    return null;
+  })();
+
+  const [apiData, localData] = await Promise.all([apiPromise, localPromise]);
+
+  // Pick whichever is newer
+  if (apiData && localData) {
+    cache = isNewer(localData, apiData) ? localData : apiData;
+  } else {
+    cache = apiData || localData;
   }
 
-  // 2. Try local IndexedDB
-  try {
-    const { loadFromDB } = await import('./db');
-    const dbData = await loadFromDB();
-    if (dbData) { dbData.meta.source = 'local'; cache = dbData; return cache; }
-  } catch {}
+  if (cache) return cache;
 
-  // 3. Fallback to demo data (unauthenticated only)
+  // Fallback to demo data (unauthenticated only)
   if (!isAuthenticated) {
     const res = await fetch('/data/bookmarks.json');
     cache = await res.json();
