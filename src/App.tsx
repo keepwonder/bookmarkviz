@@ -22,19 +22,30 @@ function ChunkErrorBoundary({ children }: { children: React.ReactNode }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    const handler = (e: ErrorEvent) => {
-      if (e.message.includes('Failed to fetch dynamically imported module') ||
-          e.message.includes('Importing a module script failed')) {
-        if (!sessionStorage.getItem('chunk-reloaded')) {
-          sessionStorage.setItem('chunk-reloaded', '1');
-          window.location.reload();
-        } else {
-          setFailed(true);
-        }
+    function isChunkError(msg: string) {
+      return msg.includes('Failed to fetch dynamically imported module') ||
+             msg.includes('Importing a module script failed') ||
+             msg.includes('error loading dynamically imported module');
+    }
+    function handleChunkError() {
+      if (!sessionStorage.getItem('chunk-reloaded')) {
+        sessionStorage.setItem('chunk-reloaded', '1');
+        window.location.reload();
+      } else {
+        setFailed(true);
       }
+    }
+    const onError = (e: ErrorEvent) => { if (isChunkError(e.message)) handleChunkError(); };
+    const onRejection = (e: PromiseRejectionEvent) => {
+      const msg = e.reason?.message || String(e.reason);
+      if (isChunkError(msg)) { e.preventDefault(); handleChunkError(); }
     };
-    window.addEventListener('error', handler);
-    return () => window.removeEventListener('error', handler);
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onRejection);
+    };
   }, []);
 
   if (failed) {
