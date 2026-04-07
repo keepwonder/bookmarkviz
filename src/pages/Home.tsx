@@ -50,7 +50,7 @@ export default function Home() {
     });
   }, [isAuthenticated]);
 
-  if (noData && isAuthenticated) {
+  if (noData) {
     return (
       <main className="max-w-[600px] mx-auto px-5 py-20 text-center">
         <div

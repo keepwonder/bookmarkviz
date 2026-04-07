@@ -62,9 +62,8 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
         cache = apiData;
         return cache;
       }
-      // Authenticated but no cloud data — return null to show "upload data" prompt
-      return null;
     } catch {}
+    // API returned no data — fall through to local IndexedDB
   }
 
   // 2. Try local IndexedDB
@@ -74,11 +73,16 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
     if (dbData) { dbData.meta.source = 'local'; cache = dbData; return cache; }
   } catch {}
 
-  // 3. Fallback to demo data
-  const res = await fetch('/data/bookmarks.json');
-  cache = await res.json();
-  cache!.meta.source = 'demo';
-  return cache!;
+  // 3. Fallback to demo data (unauthenticated only)
+  if (!isAuthenticated) {
+    const res = await fetch('/data/bookmarks.json');
+    cache = await res.json();
+    cache!.meta.source = 'demo';
+    return cache!;
+  }
+
+  // Authenticated but no data anywhere
+  return null;
 }
 
 export function setData(data: BookmarksData): void {
