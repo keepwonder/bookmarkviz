@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { loadData } from '../lib/data';
 import type { BookmarksData } from '../lib/data';
 import { useI18n } from '../lib/i18n';
@@ -32,10 +33,53 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
 
 export default function Home() {
   const [data, setData] = useState<BookmarksData | null>(null);
+  const [noData, setNoData] = useState(false);
   const { t, locale } = useI18n();
   const { isAuthenticated } = useAuth();
 
-  useEffect(() => { loadData(isAuthenticated).then(setData); }, [isAuthenticated]);
+  useEffect(() => {
+    loadData(isAuthenticated).then(d => {
+      if (d) {
+        setData(d);
+      } else {
+        // Authenticated but no cloud data yet
+        setNoData(true);
+      }
+    });
+  }, [isAuthenticated]);
+
+  if (noData && isAuthenticated) {
+    return (
+      <main className="max-w-[600px] mx-auto px-5 py-20 text-center">
+        <div
+          className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+          style={{ background: 'var(--accent-bg)' }}
+        >
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="var(--accent)" strokeWidth={1.5}>
+            <path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+          {locale === 'zh' ? '还没有书签数据' : 'No Bookmarks Yet'}
+        </h2>
+        <p className="text-[15px] mb-8" style={{ color: 'var(--text-secondary)' }}>
+          {locale === 'zh'
+            ? '上传你的 X 书签文件，开始可视化分析'
+            : 'Upload your X bookmarks file to start visualizing'}
+        </p>
+        <Link
+          to="/sync"
+          className="inline-block px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
+          style={{ background: 'var(--accent)' }}
+        >
+          {locale === 'zh' ? '上传数据' : 'Upload Data'}
+        </Link>
+      </main>
+    );
+  }
+
+  // Demo banner for unauthenticated users viewing demo data
+  const isDemo = data?.meta?.source === 'demo' && !isAuthenticated;
 
   if (!data) {
     return (
@@ -45,12 +89,10 @@ export default function Home() {
     );
   }
 
-  const isDemo = data.meta.source === 'demo' && !isAuthenticated;
   const c = t.charts;
 
   return (
     <main className="max-w-[1200px] mx-auto px-5 pb-20">
-      {/* Demo banner */}
       {isDemo && (
         <div
           className="flex items-center gap-2 rounded-xl px-5 py-3 mb-5 animate-fade-in"

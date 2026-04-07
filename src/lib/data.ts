@@ -43,8 +43,8 @@ export interface BookmarksData {
 let cache: BookmarksData | null = null;
 let lastAuthState: boolean | undefined = undefined;
 
-export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData> {
-  // Clear cache when auth state changes (e.g., user just logged in/out)
+export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData | null> {
+  // Clear cache when auth state changes
   if (isAuthenticated !== lastAuthState) {
     cache = null;
     lastAuthState = isAuthenticated;
@@ -62,6 +62,8 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
         cache = apiData;
         return cache;
       }
+      // Authenticated but no cloud data — return null to show "upload data" prompt
+      return null;
     } catch {}
   }
 
@@ -72,7 +74,7 @@ export async function loadData(isAuthenticated?: boolean): Promise<BookmarksData
     if (dbData) { dbData.meta.source = 'local'; cache = dbData; return cache; }
   } catch {}
 
-  // 3. Fallback to demo data (only for unauthenticated users)
+  // 3. Fallback to demo data
   const res = await fetch('/data/bookmarks.json');
   cache = await res.json();
   cache!.meta.source = 'demo';
