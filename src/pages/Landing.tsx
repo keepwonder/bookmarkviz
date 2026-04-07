@@ -110,7 +110,7 @@ export default function Landing() {
           {!loading && !isAuthenticated && (
             <button
               onClick={() => setShowLoginModal(true)}
-              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95"
+              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95 cursor-pointer"
               style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
             >
               {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
