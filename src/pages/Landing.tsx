@@ -5,6 +5,17 @@ import { useTheme } from '../lib/theme';
 import { useAuth } from '../lib/auth';
 import LoginModal from '../components/LoginModal';
 
+const EXTERNAL_LINKS = {
+  fieldtheory: 'https://github.com/nichochar/fieldtheory',
+  github: 'https://github.com/keepwonder/bookmarkviz',
+  x: 'https://x.com',
+  kiang: 'https://kiang.website/',
+  react: 'https://react.dev',
+  echarts: 'https://echarts.apache.org',
+  cloudflare: 'https://pages.cloudflare.com',
+  tailwindcss: 'https://tailwindcss.com',
+};
+
 export default function Landing() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
@@ -162,7 +173,8 @@ export default function Landing() {
             <button
               onClick={() => setShowLoginModal(true)}
               className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
+              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }
+            }
             >
               {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
             </button>
@@ -173,17 +185,20 @@ export default function Landing() {
       {/* Login modal */}
       <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
 
-      {/* Features */}
+      {/* Features — 6 cards */}
       <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-14 animate-fade-up" style={{ color: 'var(--text-primary)' }}>
             {l.featuresTitle}
           </h2>
-          <div className="grid md:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: '📊', title: l.feature1Title, desc: l.feature1Desc },
               { icon: '🏷️', title: l.feature2Title, desc: l.feature2Desc },
               { icon: '🌐', title: l.feature3Title, desc: l.feature3Desc },
+              { icon: '🔍', title: l.feature4Title, desc: l.feature4Desc },
+              { icon: '📁', title: l.feature5Title, desc: l.feature5Desc },
+              { icon: '☁️', title: l.feature6Title, desc: l.feature6Desc },
             ].map((f, i) => (
               <div
                 key={i}
@@ -191,7 +206,7 @@ export default function Landing() {
                 style={{
                   background: 'var(--card-bg)',
                   border: '1px solid var(--border)',
-                  animationDelay: `${i * 0.1 + 0.2}s`,
+                  animationDelay: `${i * 0.06 + 0.1}s`,
                 }}
               >
                 <div className="text-2xl mb-4">{f.icon}</div>
@@ -225,12 +240,86 @@ export default function Landing() {
               </div>
             ))}
           </div>
+          <div className="text-center mt-8">
+            <a
+              href={EXTERNAL_LINKS.fieldtheory}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[14px] font-medium hover:underline"
+              style={{ color: 'var(--accent)' }}
+            >
+              fieldtheory-cli on GitHub →
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Privacy */}
+      <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="text-3xl mb-4">🔒</div>
+          <h2 className="text-2xl font-bold mb-10" style={{ color: 'var(--text-primary)' }}>{l.privacyTitle}</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { icon: '💻', text: l.privacy1 },
+              { icon: '🚫', text: l.privacy2 },
+              { icon: '🔐', text: l.privacy3 },
+            ].map((p, i) => (
+              <div key={i} className="rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                <div className="text-xl mb-3">{p.icon}</div>
+                <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold mb-10" style={{ color: 'var(--text-primary)' }}>{l.techTitle}</h2>
+          <div className="flex flex-wrap justify-center gap-4">
+            {[
+              { name: 'React', href: EXTERNAL_LINKS.react },
+              { name: 'ECharts', href: EXTERNAL_LINKS.echarts },
+              { name: 'Tailwind CSS', href: EXTERNAL_LINKS.tailwindcss },
+              { name: 'Cloudflare Pages', href: EXTERNAL_LINKS.cloudflare },
+            ].map(tech => (
+              <a
+                key={tech.name}
+                href={tech.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 rounded-full text-[14px] font-medium transition-colors"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-secondary)' }}
+              >
+                {tech.name}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-[13px]" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-tertiary)' }}>
-        {l.footer}
+      <footer className="py-8 px-5 text-center text-[13px]" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-tertiary)' }}>
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-1.5">
+            <span>{l.footerBuiltWith}</span>
+            <a href={EXTERNAL_LINKS.fieldtheory} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>fieldtheory-cli</a>
+            <span>·</span>
+            <span>{l.footerPrivacy}</span>
+            <span>·</span>
+            <span>{l.footerNoTracking}</span>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
+            <a href={EXTERNAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>GitHub</a>
+            <span>·</span>
+            <a href={EXTERNAL_LINKS.x} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>X / Twitter</a>
+            <span>·</span>
+            <span>{l.footerBy}</span>
+            <a href={EXTERNAL_LINKS.kiang} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Kiang</a>
+          </div>
+        </div>
       </footer>
     </div>
   );
