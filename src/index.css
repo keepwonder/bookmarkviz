@@ -73,6 +73,11 @@
   scrollbar-color: var(--border) transparent;
 }
 
+/* Restore pointer cursor on all interactive elements (Tailwind preflight resets it) */
+button, [role="button"], select, summary {
+  cursor: pointer;
+}
+
 body {
   margin: 0;
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
