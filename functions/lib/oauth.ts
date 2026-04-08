@@ -33,7 +33,7 @@ export function getAuthorizationUrl(
       client_id: clientId,
       redirect_uri: redirectUri,
       state,
-      scope: 'openid profile email',
+      scope: 'openid https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
       response_type: 'code',
     });
     return `${GOOGLE_AUTHORIZE_URL}?${params}`;
@@ -106,11 +106,14 @@ export async function fetchUserProfile(
     };
   }
   if (provider === 'google') {
-    const res = await fetch(`${GOOGLE_API_URL}/oauth2/v2/userinfo`, {
+    const res = await fetch(`${GOOGLE_API_URL}/oauth2/v3/userinfo`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    const user = await res.json() as { sub: string; name?: string; given_name?: string; email?: string; picture?: string };
-    if (!user.sub) throw new Error('Google profile missing subject ID');
+    const user = await res.json() as { sub?: string; name?: string; given_name?: string; email?: string; picture?: string; error?: string; error_description?: string };
+    if (!res.ok || user.error) {
+      throw new Error(`Google API error: ${user.error || res.status} — ${user.error_description || 'unknown'}`);
+    }
+    if (!user.sub) throw new Error(`Google profile missing subject ID: ${JSON.stringify(user)}`);
     return {
       id: user.sub,
       name: user.name || user.given_name || user.email?.split('@')[0] || 'User',
