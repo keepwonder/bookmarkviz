@@ -110,7 +110,7 @@ export default function DataSync() {
 
       {/* Status message */}
       {status !== 'idle' && (
-        <div className="mt-4 p-4 rounded-xl text-[14px]"
+        <div className="mt-4 p-4 rounded-xl text-[14px]" role="status" aria-live="polite"
           style={{
             background: status === 'done' ? 'var(--accent-bg)' : status === 'error' ? 'var(--danger-bg)' : 'var(--accent-bg)',
             color: status === 'error' ? 'var(--danger)' : 'var(--accent)',

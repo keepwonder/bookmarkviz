@@ -150,10 +150,8 @@ export default function Layout() {
                     <button
                       onClick={() => { logout(); setUserMenuOpen(false); }}
                       role="menuitem"
-                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors"
+                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors hover-bg"
                       style={{ color: 'var(--text-secondary)' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       {locale === 'zh' ? '退出登录' : 'Log out'}
                     </button>

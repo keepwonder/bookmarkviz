@@ -59,7 +59,7 @@ export default function Landing() {
             className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 cursor-pointer"
             style={{
               background: locale === 'zh' ? 'var(--accent)' : 'transparent',
-              color: locale === 'zh' ? '#fff' : 'var(--text-secondary)',
+              color: locale === 'zh' ? 'var(--card-bg)' : 'var(--text-secondary)',
             }}
           >中</button>
           <button
@@ -67,7 +67,7 @@ export default function Landing() {
             className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 cursor-pointer"
             style={{
               background: locale === 'en' ? 'var(--accent)' : 'transparent',
-              color: locale === 'en' ? '#fff' : 'var(--text-secondary)',
+              color: locale === 'en' ? 'var(--card-bg)' : 'var(--text-secondary)',
             }}
           >EN</button>
         </div>
@@ -100,7 +100,7 @@ export default function Landing() {
               className="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer"
               style={{
                 background: theme === key ? 'var(--accent)' : 'transparent',
-                color: theme === key ? '#fff' : 'var(--text-secondary)',
+                color: theme === key ? 'var(--card-bg)' : 'var(--text-secondary)',
               }}
             >{icon}</button>
           ))}
@@ -145,7 +145,7 @@ export default function Landing() {
         </div>
 
         <h1
-          className="text-5xl md:text-7xl font-bold tracking-tight mb-4 animate-scale-in delay-1"
+          className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-scale-in delay-1"
           style={{ color: 'var(--text-primary)' }}
         >
           {l.title}
@@ -188,10 +188,10 @@ export default function Landing() {
       {/* Features — 6 cards */}
       <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-14 animate-fade-up" style={{ color: 'var(--text-primary)' }}>
+          <h2 className="text-2xl font-bold text-center mb-10 animate-fade-up" style={{ color: 'var(--text-primary)' }}>
             {l.featuresTitle}
           </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { icon: '📊', title: l.feature1Title, desc: l.feature1Desc },
               { icon: '🏷️', title: l.feature2Title, desc: l.feature2Desc },
@@ -221,7 +221,7 @@ export default function Landing() {
       {/* Steps */}
       <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-14" style={{ color: 'var(--text-primary)' }}>{l.stepsTitle}</h2>
+          <h2 className="text-2xl font-bold text-center mb-10" style={{ color: 'var(--text-primary)' }}>{l.stepsTitle}</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { step: 1, title: l.step1Title, desc: l.step1Desc },

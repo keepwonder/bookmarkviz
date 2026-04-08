@@ -21,7 +21,7 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
     >
       <h2 className="text-[17px] font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{title}</h2>
       <Suspense fallback={
-        <div className="flex items-center justify-center h-[200px]">
+        <div className="flex items-center justify-center h-[200px]" role="status" aria-label="Loading">
           <div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
         </div>
       }>

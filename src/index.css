@@ -115,3 +115,11 @@ body {
 .delay-4 { animation-delay: 0.24s; }
 .delay-5 { animation-delay: 0.30s; }
 .delay-6 { animation-delay: 0.36s; }
+
+/* Hover utilities using CSS variables */
+.hover-bg:hover { background: var(--bg-hover); }
+.hover-border-accent:hover { border-color: var(--accent); }
+.hover-color-accent:hover { color: var(--accent); }
+.hover-color-danger:hover { color: var(--danger); }
+.hover-bg-accent:hover { background: var(--accent-bg); }
+.transition-default { transition: background 0.15s, border-color 0.15s, color 0.15s; }

@@ -362,10 +362,8 @@ export default function Explore() {
                   <button
                     key={col.id}
                     onClick={() => handleBatchAddToCollection(col)}
-                    className="w-full px-3 py-2 text-[13px] text-left flex items-center gap-2 cursor-pointer transition-colors"
+                    className="w-full px-3 py-2 text-[13px] text-left flex items-center gap-2 cursor-pointer transition-colors hover-bg"
                     style={{ color: 'var(--text-primary)' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <span>{col.emoji}</span>
                     <span className="truncate">{col.name}</span>

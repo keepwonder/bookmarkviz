@@ -92,15 +92,13 @@ export default function BookmarkCard({ bookmark, onReadChange, highlight, select
   return (
     <>
       <div
-        className="w-full rounded-2xl p-4 transition-all duration-200 relative cursor-pointer"
+        className="w-full rounded-2xl p-4 transition-all duration-200 relative cursor-pointer hover-border-accent hover-bg"
         style={{
           background: 'var(--bg-secondary)',
           border: selected ? '2px solid var(--accent)' : focused ? '2px solid var(--accent)' : '1px solid var(--border)',
           boxShadow: focused ? '0 0 0 2px rgba(29,155,240,0.2)' : 'none',
         }}
         onClick={selectable ? onSelect : () => setShowDetail(true)}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = selected ? 'var(--accent)' : 'var(--border)'; e.currentTarget.style.background = 'var(--bg-secondary)'; }}
       >
         <div className="flex gap-3">
           {/* Left control: checkbox in batch mode, read toggle in normal mode */}
@@ -154,10 +152,8 @@ export default function BookmarkCard({ bookmark, onReadChange, highlight, select
               <div className="ml-auto flex-shrink-0 relative" ref={menuRef}>
                 <button
                   onClick={e => { e.stopPropagation(); setShowColMenu(!showColMenu); }}
-                  className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer hover-color-accent hover-bg"
                   style={{ color: 'var(--text-tertiary)' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-tertiary)'; e.currentTarget.style.background = 'transparent'; }}
                   title={t.common.addToCollection}
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill={inAnyCollection ? 'var(--accent)' : 'none'} stroke={inAnyCollection ? 'var(--accent)' : 'currentColor'} strokeWidth={2}>
@@ -174,10 +170,8 @@ export default function BookmarkCard({ bookmark, onReadChange, highlight, select
                       <button
                         key={col.id}
                         onClick={e => handleAddToCollection(e, col)}
-                        className="w-full px-3 py-2 text-[13px] text-left flex items-center gap-2 cursor-pointer transition-colors"
+                        className="w-full px-3 py-2 text-[13px] text-left flex items-center gap-2 cursor-pointer transition-colors hover-bg"
                         style={{ color: 'var(--text-primary)' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                       >
                         <span>{col.emoji}</span>
                         <span className="truncate">{col.name}</span>

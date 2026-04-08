@@ -109,11 +109,9 @@ export default function Collections() {
                 <BookmarkCard bookmark={b} />
                 <button
                   onClick={() => setConfirmAction({ type: 'remove', id: activeCollection.id, bookmarkId: b.id })}
-                  className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  className="absolute top-4 right-4 w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer hover-bg hover-color-accent"
                   style={{ color: 'var(--text-tertiary)', background: 'var(--bg-secondary)' }}
                   title={c.remove}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; e.currentTarget.style.color = 'var(--accent)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-secondary)'; e.currentTarget.style.color = 'var(--text-tertiary)'; }}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path d="M6 18L18 6M6 6l12 12" />
@@ -200,20 +198,16 @@ export default function Collections() {
             <button
               key={col.id}
               onClick={() => setActiveId(col.id)}
-              className="text-left rounded-2xl p-5 transition-all duration-200 cursor-pointer"
+              className="text-left rounded-2xl p-5 transition-all duration-200 cursor-pointer hover-border-accent hover-bg"
               style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--bg-hover)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--bg-secondary)'; }}
             >
               <div className="flex items-start justify-between">
                 <span className="text-2xl">{col.emoji}</span>
                 <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                   <button
                     onClick={() => { setEditingId(col.id); setEditName(col.name); }}
-                    className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors hover-color-accent"
                     style={{ color: 'var(--text-tertiary)' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-tertiary)'; }}
                     title={c.rename}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -223,10 +217,8 @@ export default function Collections() {
                   </button>
                   <button
                     onClick={() => setConfirmAction({ type: 'delete', id: col.id })}
-                    className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
+                    className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors hover-color-danger"
                     style={{ color: 'var(--text-tertiary)' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-tertiary)'; }}
                     title={c.deleteLabel}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
