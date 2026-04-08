@@ -26,7 +26,7 @@ export default class ErrorBoundary extends Component<Props, State> {
           <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
             Something went wrong
           </h2>
-          <p className="text-[14px] max-w-md text-center font-mono" style={{ color: '#f4212e' }}>
+          <p className="text-[14px] max-w-md text-center font-mono" style={{ color: 'var(--danger)' }}>
             {msg}
           </p>
           {stack && (

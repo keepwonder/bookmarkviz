@@ -27,7 +27,7 @@ export default function Layout() {
       >
         <div className="max-w-[1200px] mx-auto px-5 h-[53px] flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-[15px] font-bold" style={{ color: 'var(--text-primary)' }}>
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="var(--accent)">
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="var(--accent)" aria-hidden="true">
               <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/>
             </svg>
             BookmarkViz
@@ -50,27 +50,31 @@ export default function Layout() {
               </Link>
             ))}
 
-            <span className="mx-2 w-px h-5" style={{ background: 'var(--border)' }} />
+            <span className="mx-2 w-px h-5" style={{ background: 'var(--border)' }} aria-hidden="true" />
 
             {/* Language toggle */}
             <div
               className="flex rounded-full p-0.5 h-8"
-              style={{ background: 'var(--bg-hover, rgba(255,255,255,0.08))' }}
+              style={{ background: 'var(--bg-hover)' }}
+              role="radiogroup"
+              aria-label="Language"
             >
               <button
                 onClick={() => setLocale('zh')}
+                aria-pressed={locale === 'zh'}
                 className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 flex items-center"
                 style={{
                   background: locale === 'zh' ? 'var(--accent)' : 'transparent',
-                  color: locale === 'zh' ? '#fff' : 'var(--text-secondary)',
+                  color: locale === 'zh' ? 'var(--card-bg)' : 'var(--text-secondary)',
                 }}
               >中</button>
               <button
                 onClick={() => setLocale('en')}
+                aria-pressed={locale === 'en'}
                 className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 flex items-center"
                 style={{
                   background: locale === 'en' ? 'var(--accent)' : 'transparent',
-                  color: locale === 'en' ? '#fff' : 'var(--text-secondary)',
+                  color: locale === 'en' ? 'var(--card-bg)' : 'var(--text-secondary)',
                 }}
               >EN</button>
             </div>
@@ -78,32 +82,36 @@ export default function Layout() {
             {/* Theme toggle */}
             <div
               className="flex rounded-full p-0.5 h-8"
-              style={{ background: 'var(--bg-hover, rgba(255,255,255,0.08))' }}
+              style={{ background: 'var(--bg-hover)' }}
+              role="radiogroup"
+              aria-label="Theme"
             >
               {([
-                { key: 'light' as const, icon: (
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                { key: 'light' as const, label: 'Light', icon: (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                   </svg>
                 )},
-                { key: 'dark' as const, icon: (
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                { key: 'dark' as const, label: 'Dark', icon: (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
                   </svg>
                 )},
-                { key: 'system' as const, icon: (
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                { key: 'system' as const, label: 'System', icon: (
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
                   </svg>
                 )},
-              ]).map(({ key, icon }) => (
+              ]).map(({ key, label, icon }) => (
                 <button
                   key={key}
                   onClick={() => setTheme(key)}
+                  aria-pressed={theme === key}
+                  aria-label={label}
                   className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
                   style={{
                     background: theme === key ? 'var(--accent)' : 'transparent',
-                    color: theme === key ? '#fff' : 'var(--text-secondary)',
+                    color: theme === key ? 'var(--card-bg)' : 'var(--text-secondary)',
                   }}
                 >
                   {icon}
@@ -116,12 +124,15 @@ export default function Layout() {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  aria-expanded={userMenuOpen}
+                  aria-haspopup="true"
+                  aria-label={user.name}
                   className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center"
                 >
                   {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name} className="w-8 h-8 rounded-full" />
+                    <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold text-white" style={{ background: 'var(--accent)' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}>
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -129,6 +140,7 @@ export default function Layout() {
                 {userMenuOpen && (
                   <div
                     className="absolute right-0 top-10 w-48 rounded-xl shadow-lg z-50 py-1 animate-scale-in overflow-hidden"
+                    role="menu"
                     style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
                   >
                     <div className="px-3 py-2 border-b" style={{ borderColor: 'var(--border)' }}>
@@ -137,6 +149,7 @@ export default function Layout() {
                     </div>
                     <button
                       onClick={() => { logout(); setUserMenuOpen(false); }}
+                      role="menuitem"
                       className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors"
                       style={{ color: 'var(--text-secondary)' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
@@ -151,7 +164,7 @@ export default function Layout() {
               <button
                 onClick={() => setShowLoginModal(true)}
                 className="px-4 py-1.5 rounded-full text-[13px] font-bold transition-opacity hover:opacity-90 cursor-pointer"
-                style={{ background: 'var(--accent)', color: '#fff' }}
+                style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}
               >
                 {locale === 'zh' ? '登录' : 'Login'}
               </button>
@@ -163,13 +176,15 @@ export default function Layout() {
             className="md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-colors"
             style={{ color: 'var(--text-primary)' }}
             onClick={() => setMenuOpen(!menuOpen)}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
             {menuOpen ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -204,41 +219,53 @@ export default function Layout() {
             <div className="px-4 pb-4 flex items-center gap-3">
               <div
                 className="flex rounded-full p-0.5 h-8"
-                style={{ background: 'var(--bg-hover, rgba(255,255,255,0.08))' }}
+                style={{ background: 'var(--bg-hover)' }}
+                role="radiogroup"
+                aria-label="Language"
               >
                 <button
                   onClick={() => { setLocale('zh'); }}
+                  aria-pressed={locale === 'zh'}
                   className="px-3 rounded-full text-[13px] font-medium transition-all h-7 flex items-center"
                   style={{
                     background: locale === 'zh' ? 'var(--accent)' : 'transparent',
-                    color: locale === 'zh' ? '#fff' : 'var(--text-secondary)',
+                    color: locale === 'zh' ? 'var(--card-bg)' : 'var(--text-secondary)',
                   }}
                 >中</button>
                 <button
                   onClick={() => { setLocale('en'); }}
+                  aria-pressed={locale === 'en'}
                   className="px-3 rounded-full text-[13px] font-medium transition-all h-7 flex items-center"
                   style={{
                     background: locale === 'en' ? 'var(--accent)' : 'transparent',
-                    color: locale === 'en' ? '#fff' : 'var(--text-secondary)',
+                    color: locale === 'en' ? 'var(--card-bg)' : 'var(--text-secondary)',
                   }}
                 >EN</button>
               </div>
 
               <div
                 className="flex rounded-full p-0.5 h-8"
-                style={{ background: 'var(--bg-hover, rgba(255,255,255,0.08))' }}
+                style={{ background: 'var(--bg-hover)' }}
+                role="radiogroup"
+                aria-label="Theme"
               >
-                {(['light', 'dark', 'system'] as const).map(k => (
+                {([
+                  { key: 'light' as const, label: '☀️' },
+                  { key: 'dark' as const, label: '🌙' },
+                  { key: 'system' as const, label: '💻' },
+                ]).map(({ key, label }) => (
                   <button
-                    key={k}
-                    onClick={() => setTheme(k)}
+                    key={key}
+                    onClick={() => setTheme(key)}
+                    aria-pressed={theme === key}
+                    aria-label={key.charAt(0).toUpperCase() + key.slice(1)}
                     className="w-7 h-7 rounded-full flex items-center justify-center transition-all text-[14px]"
                     style={{
-                      background: theme === k ? 'var(--accent)' : 'transparent',
-                      color: theme === k ? '#fff' : 'var(--text-secondary)',
+                      background: theme === key ? 'var(--accent)' : 'transparent',
+                      color: theme === key ? 'var(--card-bg)' : 'var(--text-secondary)',
                     }}
                   >
-                    {k === 'light' ? '☀️' : k === 'dark' ? '🌙' : '💻'}
+                    {label}
                   </button>
                 ))}
               </div>
@@ -249,9 +276,9 @@ export default function Layout() {
               {isAuthenticated && user ? (
                 <div className="flex items-center gap-3">
                   {user.avatarUrl ? (
-                    <img src={user.avatarUrl} alt={user.name} className="w-8 h-8 rounded-full" />
+                    <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold text-white" style={{ background: 'var(--accent)' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold" style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}>
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -270,8 +297,8 @@ export default function Layout() {
               ) : (
                 <button
                   onClick={() => { closeMenu(); setShowLoginModal(true); }}
-                  className="w-full py-2.5 rounded-full text-[14px] font-bold text-white cursor-pointer"
-                  style={{ background: 'var(--accent)' }}
+                  className="w-full py-2.5 rounded-full text-[14px] font-bold cursor-pointer"
+                  style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}
                 >
                   {locale === 'zh' ? '登录' : 'Login'}
                 </button>

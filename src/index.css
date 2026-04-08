@@ -14,7 +14,11 @@
   --accent-bg: rgba(29,155,240,0.1);
   --accent-bg-strong: rgba(29,155,240,0.2);
   --danger: #f4212e;
+  --danger-bg: rgba(244,33,46,0.1);
+  --danger-border: rgba(244,33,46,0.3);
   --success: #00ba7c;
+  --overlay: rgba(0,0,0,0.5);
+  --overlay-light: rgba(91,112,131,0.4);
   --card-bg: #ffffff;
   --chart-from: #1d9bf0;
   --chart-to: #004ba0;
@@ -44,7 +48,11 @@
   --accent-bg: rgba(29,155,240,0.15);
   --accent-bg-strong: rgba(29,155,240,0.25);
   --danger: #f4212e;
+  --danger-bg: rgba(244,33,46,0.15);
+  --danger-border: rgba(244,33,46,0.4);
   --success: #00ba7c;
+  --overlay: rgba(0,0,0,0.7);
+  --overlay-light: rgba(91,112,131,0.6);
   --card-bg: #16181c;
   --chart-from: #1d9bf0;
   --chart-to: #4dc1ff;

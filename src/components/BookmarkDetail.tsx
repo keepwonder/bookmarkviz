@@ -14,8 +14,31 @@ type FetchState = { status: 'idle' | 'loading' | 'x-article' | 'no-content' | 'd
 export default function BookmarkDetail({ bookmark, onClose }: Props) {
   const [fetchState, setFetchState] = useState<FetchState>({ status: 'idle' });
   const { t } = useI18n();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const { text, authorHandle, authorName, authorAvatar, engagement, url, postedAt, links } = bookmark;
+
+  // Focus trap + Escape
+  useEffect(() => {
+    const prev = document.activeElement as HTMLElement;
+    dialogRef.current?.focus();
+
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => { window.removeEventListener('keydown', handler); prev?.focus(); };
+  }, [onClose]);
 
   // Resolve the main external link and fetch content
   useEffect(() => {
@@ -36,7 +59,6 @@ export default function BookmarkDetail({ bookmark, onClose }: Props) {
         return;
       }
 
-      // External link — fetch content
       setFetchState({ status: 'loading' });
       const result = await fetchUrlContent(resolved.url);
       if (!cancelled) {
@@ -47,23 +69,21 @@ export default function BookmarkDetail({ bookmark, onClose }: Props) {
     return () => { cancelled = true; };
   }, [text, links]);
 
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [onClose]);
-
   // Clean display text: remove t.co links
   const displayText = text.replace(/https?:\/\/t\.co\/\S+/g, '').trim();
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4" onClick={onClose}>
-      <div className="absolute inset-0" style={{ background: 'rgba(91, 112, 131, 0.4)', backdropFilter: 'blur(4px)' }} />
+      <div className="absolute inset-0" style={{ background: 'var(--overlay-light)', backdropFilter: 'blur(4px)' }} />
 
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${authorName} (@${authorHandle})`}
+        tabIndex={-1}
         className="relative w-full max-w-[640px] max-sm:h-full max-sm:max-h-full max-sm:rounded-none max-h-[85vh] rounded-2xl overflow-hidden animate-scale-in flex flex-col"
-        style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+        style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', outline: 'none' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -80,12 +100,13 @@ export default function BookmarkDetail({ bookmark, onClose }: Props) {
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
             style={{ color: 'var(--text-secondary)' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
               <path d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>

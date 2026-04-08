@@ -112,7 +112,7 @@ export default function DataSync() {
       {status !== 'idle' && (
         <div className="mt-4 p-4 rounded-xl text-[14px]"
           style={{
-            background: status === 'done' ? 'var(--accent-bg)' : status === 'error' ? 'rgba(244,33,46,0.1)' : 'var(--accent-bg)',
+            background: status === 'done' ? 'var(--accent-bg)' : status === 'error' ? 'var(--danger-bg)' : 'var(--accent-bg)',
             color: status === 'error' ? 'var(--danger)' : 'var(--accent)',
             border: '1px solid ' + (status === 'done' ? 'var(--accent-bg-strong)' : 'transparent'),
           }}>

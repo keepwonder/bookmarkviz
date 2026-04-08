@@ -225,7 +225,7 @@ export default function Collections() {
                     onClick={() => setConfirmAction({ type: 'delete', id: col.id })}
                     className="w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-colors"
                     style={{ color: 'var(--text-tertiary)' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#f4212e'; }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'var(--danger)'; }}
                     onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-tertiary)'; }}
                     title={c.deleteLabel}
                   >

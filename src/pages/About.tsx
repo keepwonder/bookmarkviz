@@ -144,7 +144,7 @@ export default function About() {
             <input ref={fileRef} type="file" accept=".json" onChange={handleImport} className="hidden" />
           </div>
           {importMsg && (
-            <p className="mt-3 text-[13px]" style={{ color: importMsg.includes('success') || importMsg.includes('成功') ? '#00ba7c' : '#f4212e' }}>
+            <p className="mt-3 text-[13px]" style={{ color: importMsg.includes('success') || importMsg.includes('成功') ? 'var(--success)' : 'var(--danger)' }}>
               {importMsg}
             </p>
           )}

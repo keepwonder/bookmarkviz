@@ -40,7 +40,7 @@ export default function Landing() {
       {authError && (
         <div
           className="flex items-center justify-between gap-3 px-5 py-3 text-[14px]"
-          style={{ background: 'rgba(244,33,46,0.1)', color: '#f4212e', borderBottom: '1px solid rgba(244,33,46,0.3)' }}
+          style={{ background: 'var(--danger-bg)', color: 'var(--danger)', borderBottom: '1px solid var(--danger-border)' }}
         >
           <span>{authError}</span>
           <button onClick={() => setAuthError(null)} className="cursor-pointer font-bold">✕</button>
