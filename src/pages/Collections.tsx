@@ -14,6 +14,7 @@ import {
 } from '../lib/collections';
 import BookmarkCard from '../components/BookmarkCard';
 import ConfirmModal from '../components/ConfirmModal';
+import EmptyDataGuide from '../components/EmptyDataGuide';
 
 const EMOJIS = ['📁', '📂', '📌', '⭐', '🔥', '💡', '🎯', '📚', '🛠', '🧪', '✨', '🔖'];
 
@@ -24,7 +25,7 @@ function formatDate(ts: number, locale: string): string {
 }
 
 export default function Collections() {
-  const [data, setData] = useState<BookmarksData | null>(null);
+  const [data, setData] = useState<BookmarksData | null | undefined>(undefined);
   const [collections, setCollections] = useState<Collection[]>(getCollections);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -72,8 +73,12 @@ export default function Collections() {
     return data.bookmarks.filter(b => idSet.has(b.id));
   }, [data, activeCollection]);
 
-  if (!data) {
+  if (data === undefined) {
     return <div className="flex items-center justify-center h-[60vh]"><div className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>{t.loading}</div></div>;
+  }
+
+  if (data === null) {
+    return <EmptyDataGuide />;
   }
 
   // Collection detail view

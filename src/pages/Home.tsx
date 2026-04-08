@@ -32,25 +32,27 @@ function ChartCard({ title, children, delay }: { title: string; children: React.
 }
 
 export default function Home() {
-  const [data, setData] = useState<BookmarksData | null>(null);
-  const [noData, setNoData] = useState(false);
+  const [data, setData] = useState<BookmarksData | null | undefined>(undefined);
   const { t, locale } = useI18n();
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     loadData(isAuthenticated).then(d => {
-      if (d) {
-        setData(d);
-      } else {
-        // Authenticated but no cloud data yet
-        setNoData(true);
-      }
+      setData(d ?? null);
     }).catch(() => {
-      setNoData(true);
+      setData(null);
     });
   }, [isAuthenticated]);
 
-  if (noData) {
+  if (data === undefined) {
+    return (
+      <div className="flex items-center justify-center h-[60vh]">
+        <div className="w-5 h-5 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
+      </div>
+    );
+  }
+
+  if (data === null) {
     return (
       <main className="max-w-[600px] mx-auto px-5 py-20 text-center">
         <div
@@ -71,25 +73,24 @@ export default function Home() {
         </p>
         <Link
           to="/sync"
-          className="inline-block px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
-          style={{ background: 'var(--accent)' }}
+          className="inline-block px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95"
+          style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}
         >
           {locale === 'zh' ? '上传数据' : 'Upload Data'}
         </Link>
+        <p className="text-[13px] mt-6" style={{ color: 'var(--text-tertiary)' }}>
+          {locale === 'zh' ? '使用' : 'Use'}{' '}
+          <a href="https://github.com/afar1/fieldtheory-cli" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>
+            fieldtheory-cli
+          </a>
+          {' '}{locale === 'zh' ? '快速导出你的 X 书签' : 'to export your X bookmarks'}
+        </p>
       </main>
     );
   }
 
   // Demo banner for unauthenticated users viewing demo data
-  const isDemo = data?.meta?.source === 'demo' && !isAuthenticated;
-
-  if (!data) {
-    return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>{t.loading}</div>
-      </div>
-    );
-  }
+  const isDemo = data.meta?.source === 'demo' && !isAuthenticated;
 
   const c = t.charts;
 

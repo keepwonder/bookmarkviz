@@ -7,13 +7,14 @@ import { isRead, markAsRead } from '../lib/read-status';
 import { getAllCachedContent } from '../lib/content-fetcher';
 import { getCollections, addToCollection, type Collection } from '../lib/collections';
 import BookmarkCard from '../components/BookmarkCard';
+import EmptyDataGuide from '../components/EmptyDataGuide';
 import { PAGE_SIZE, DEBOUNCE_MS } from '../lib/constants';
 
 type SortKey = 'date' | 'likes' | 'bookmarks';
 type ReadFilter = 'all' | 'unread' | 'read';
 
 export default function Explore() {
-  const [data, setData] = useState<BookmarksData | null>(null);
+  const [data, setData] = useState<BookmarksData | null | undefined>(undefined);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [authorFilter, setAuthorFilter] = useState('');
@@ -166,8 +167,12 @@ export default function Explore() {
 
   const collections = getCollections();
 
-  if (!data) {
+  if (data === undefined) {
     return <div className="flex items-center justify-center h-[60vh]"><div className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>{t.loading}</div></div>;
+  }
+
+  if (data === null) {
+    return <EmptyDataGuide />;
   }
 
   return (
