@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
@@ -26,6 +26,7 @@ export default function Landing() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const l = t.landing;
 
   // Show auth errors from OAuth callback
@@ -37,6 +38,18 @@ export default function Landing() {
       window.history.replaceState({}, '', '/');
     }
   }, []);
+
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [userMenuOpen]);
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
@@ -112,7 +125,7 @@ export default function Landing() {
 
         {/* User info / Login */}
         {!loading && isAuthenticated && user ? (
-          <div className="relative">
+          <div className="relative" ref={userMenuRef}>
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               aria-expanded={userMenuOpen}
