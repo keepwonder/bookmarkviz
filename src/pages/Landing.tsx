@@ -8,7 +8,7 @@ import LoginModal from '../components/LoginModal';
 const EXTERNAL_LINKS = {
   fieldtheory: 'https://github.com/afar1/fieldtheory-cli',
   github: 'https://github.com/keepwonder/bookmarkviz',
-  x: 'https://x.com',
+  x: 'https://x.com/JeunesseQ',
   kiang: 'https://kiang.website/',
   react: 'https://react.dev',
   echarts: 'https://echarts.apache.org',
@@ -314,7 +314,7 @@ export default function Landing() {
           <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
             <a href={EXTERNAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>GitHub</a>
             <span>·</span>
-            <a href={EXTERNAL_LINKS.x} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>X / Twitter</a>
+            <a href={EXTERNAL_LINKS.x} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>@JeunesseQ</a>
             <span>·</span>
             <a href={EXTERNAL_LINKS.kiang} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Kiang</a>
           </div>
