@@ -16,6 +16,7 @@ export default function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -148,12 +149,21 @@ export default function Layout() {
                       {user.email && <p className="text-[12px] truncate" style={{ color: 'var(--text-tertiary)' }}>{user.email}</p>}
                     </div>
                     <button
-                      onClick={() => { logout(); setUserMenuOpen(false); }}
+                      onClick={async () => { setLoggingOut(true); await logout(); }}
+                      disabled={loggingOut}
                       role="menuitem"
-                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors hover-bg"
+                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors hover-bg flex items-center gap-2 disabled:opacity-60 disabled:cursor-wait"
                       style={{ color: 'var(--text-secondary)' }}
                     >
-                      {locale === 'zh' ? '退出登录' : 'Log out'}
+                      {loggingOut && (
+                        <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                          <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
+                      )}
+                      {loggingOut
+                        ? (locale === 'zh' ? '正在退出...' : 'Logging out...')
+                        : (locale === 'zh' ? '退出登录' : 'Log out')}
                     </button>
                   </div>
                 )}
