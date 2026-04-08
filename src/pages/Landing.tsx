@@ -19,8 +19,10 @@ const EXTERNAL_LINKS = {
 export default function Landing() {
   const { t, locale, setLocale } = useI18n();
   const { theme, setTheme } = useTheme();
-  const { loading, user, isAuthenticated } = useAuth();
+  const { loading, user, isAuthenticated, logout } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const l = t.landing;
 
@@ -108,20 +110,73 @@ export default function Landing() {
 
         {/* User info / Login */}
         {!loading && isAuthenticated && user ? (
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-opacity hover:opacity-90"
-            style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)' }}
-          >
-            {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt={user.name} className="w-6 h-6 rounded-full" />
-            ) : (
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ background: 'var(--accent)' }}>
-                {user.name.charAt(0).toUpperCase()}
+          <div className="relative">
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              aria-expanded={userMenuOpen}
+              aria-haspopup="true"
+              aria-label={user.name}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full transition-opacity hover:opacity-90"
+              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid var(--border)' }}
+            >
+              {user.avatarUrl ? (
+                <img src={user.avatarUrl} alt="" className="w-6 h-6 rounded-full" />
+              ) : (
+                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ background: 'var(--accent)', color: 'var(--card-bg)' }}>
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="text-[13px] font-medium max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</span>
+            </button>
+            {userMenuOpen && (
+              <div
+                className="absolute right-0 top-10 w-48 rounded-xl shadow-lg z-50 py-1 animate-scale-in overflow-hidden"
+                role="menu"
+                style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+              >
+                <div className="px-3 py-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                  <p className="text-[14px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
+                  {user.email && <p className="text-[12px] truncate" style={{ color: 'var(--text-tertiary)' }}>{user.email}</p>}
+                </div>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setUserMenuOpen(false)}
+                  className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 transition-colors hover-bg"
+                  style={{ color: 'var(--text-primary)' }}
+                  role="menuitem"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4" />
+                  </svg>
+                  {locale === 'zh' ? '数据面板' : 'Dashboard'}
+                </Link>
+                <button
+                  onClick={async () => { setLoggingOut(true); await logout(); }}
+                  disabled={loggingOut}
+                  className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 transition-colors hover-bg disabled:opacity-60 disabled:cursor-wait"
+                  style={{ color: 'var(--text-secondary)' }}
+                  role="menuitem"
+                >
+                  {loggingOut ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+                        <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                      </svg>
+                      {locale === 'zh' ? '正在退出...' : 'Logging out...'}
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      {locale === 'zh' ? '退出登录' : 'Log out'}
+                    </>
+                  )}
+                </button>
               </div>
             )}
-            <span className="text-[13px] font-medium max-w-[100px] truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</span>
-          </Link>
+          </div>
         ) : !loading ? (
           <button
             onClick={() => setShowLoginModal(true)}
