@@ -4,6 +4,7 @@ import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
 import { useAuth } from '../lib/auth';
 import LoginModal from '../components/LoginModal';
+import AccountModal from '../components/AccountModal';
 
 const EXTERNAL_LINKS = {
   fieldtheory: 'https://github.com/afar1/fieldtheory-cli',
@@ -23,6 +24,7 @@ export default function Landing() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const l = t.landing;
 
@@ -151,28 +153,27 @@ export default function Landing() {
                   {locale === 'zh' ? '数据面板' : 'Dashboard'}
                 </Link>
                 <button
+                  onClick={() => { setUserMenuOpen(false); setShowAccountModal(true); }}
+                  className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 transition-colors hover-bg"
+                  style={{ color: 'var(--text-primary)' }}
+                  role="menuitem"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  {locale === 'zh' ? '账户信息' : 'Account'}
+                </button>
+                <button
                   onClick={async () => { setLoggingOut(true); await logout(); }}
                   disabled={loggingOut}
                   className="w-full px-3 py-2.5 text-[13px] text-left flex items-center gap-2 transition-colors hover-bg disabled:opacity-60 disabled:cursor-wait"
                   style={{ color: 'var(--text-secondary)' }}
                   role="menuitem"
                 >
-                  {loggingOut ? (
-                    <>
-                      <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.25" />
-                        <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                      </svg>
-                      {locale === 'zh' ? '正在退出...' : 'Logging out...'}
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      {locale === 'zh' ? '退出登录' : 'Log out'}
-                    </>
-                  )}
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  {loggingOut ? (locale === 'zh' ? '正在退出...' : 'Logging out...') : (locale === 'zh' ? '退出登录' : 'Log out')}
                 </button>
               </div>
             )}
@@ -239,6 +240,7 @@ export default function Landing() {
 
       {/* Login modal */}
       <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <AccountModal open={showAccountModal} onClose={() => setShowAccountModal(false)} />
 
       {/* Features — 6 cards */}
       <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>

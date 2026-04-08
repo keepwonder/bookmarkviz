@@ -4,6 +4,7 @@ import { useI18n } from '../lib/i18n';
 import { useTheme } from '../lib/theme';
 import { useAuth } from '../lib/auth';
 import LoginModal from './LoginModal';
+import AccountModal from './AccountModal';
 
 const NAV_KEYS = ['dashboard', 'explore', 'collections', 'sync', 'about'] as const;
 const NAV_PATHS = ['/dashboard', '/explore', '/collections', '/sync', '/about'];
@@ -17,6 +18,7 @@ export default function Layout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -148,6 +150,17 @@ export default function Layout() {
                       <p className="text-[14px] font-bold truncate" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
                       {user.email && <p className="text-[12px] truncate" style={{ color: 'var(--text-tertiary)' }}>{user.email}</p>}
                     </div>
+                    <button
+                      onClick={() => { setUserMenuOpen(false); setShowAccountModal(true); }}
+                      role="menuitem"
+                      className="w-full px-3 py-2.5 text-[13px] text-left cursor-pointer transition-colors hover-bg flex items-center gap-2"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                        <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      {locale === 'zh' ? '账户信息' : 'Account'}
+                    </button>
                     <button
                       onClick={async () => { setLoggingOut(true); await logout(); }}
                       disabled={loggingOut}
@@ -318,6 +331,7 @@ export default function Layout() {
       <Outlet />
 
       <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
+      <AccountModal open={showAccountModal} onClose={() => setShowAccountModal(false)} />
     </div>
   );
 }
