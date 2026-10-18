@@ -34,13 +34,23 @@ export default function Hero({ data }: Props) {
   const dateEnd = meta.dateRange?.[1];
 
   const h = t.hero;
+  const iconProps = {
+    viewBox: '0 0 24 24',
+    className: 'w-3.5 h-3.5',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.7,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  };
   const stats = [
-    { label: h.totalBookmarks, value: meta.totalBookmarks.toLocaleString(), icon: '🔖' },
-    { label: h.totalAuthors, value: meta.totalAuthors, icon: '👤' },
-    ...(dateStart && dateEnd ? [{ label: h.dateSpan, value: formatShortDate(dateStart, locale) + ' ~ ' + formatShortDate(dateEnd, locale), icon: '📅' }] : []),
-    { label: h.avgLikes, value: avgLikes.toLocaleString(), icon: '❤️' },
-    { label: h.totalEngBookmarks, value: totalBookmarks.toLocaleString(), icon: '📊' },
-    { label: h.readRate, value: `${readRate}%`, icon: '📖' },
+    { label: h.totalBookmarks, value: meta.totalBookmarks.toLocaleString(), icon: <svg {...iconProps}><path d="M6 3h12v18l-6-4-6 4V3z" /></svg> },
+    { label: h.totalAuthors, value: meta.totalAuthors, icon: <svg {...iconProps}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /></svg> },
+    ...(dateStart && dateEnd ? [{ label: h.dateSpan, value: formatShortDate(dateStart, locale) + ' ~ ' + formatShortDate(dateEnd, locale), icon: <svg {...iconProps}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg> }] : []),
+    { label: h.avgLikes, value: avgLikes.toLocaleString(), icon: <svg {...iconProps}><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg> },
+    { label: h.totalEngBookmarks, value: totalBookmarks.toLocaleString(), icon: <svg {...iconProps}><path d="M3 3v18h18" /><path d="M7 16v-4M12 16V8M17 16v-7" /></svg> },
+    { label: h.readRate, value: `${readRate}%`, icon: <svg {...iconProps}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg> },
   ];
 
   return (
@@ -64,7 +74,10 @@ export default function Hero({ data }: Props) {
                 animationDelay: `${i * 0.05 + 0.1}s`,
               }}
             >
-              <div className="text-[11px] mb-1" style={{ color: 'var(--text-tertiary)' }}>{s.icon} {s.label}</div>
+              <div className="flex items-center gap-1.5 text-[11px] mb-1" style={{ color: 'var(--text-tertiary)' }}>
+                <span className="inline-flex w-4 h-4 items-center justify-center" style={{ color: 'var(--accent)' }}>{s.icon}</span>
+                {s.label}
+              </div>
               <div className="text-xl font-bold" style={{ color: 'var(--accent)' }}>{s.value}</div>
             </div>
           ))}

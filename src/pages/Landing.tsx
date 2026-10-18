@@ -5,6 +5,7 @@ import { useTheme } from '../lib/theme';
 import { useAuth } from '../lib/auth';
 import LoginModal from '../components/LoginModal';
 import AccountModal from '../components/AccountModal';
+import SiteFooter from '../components/SiteFooter';
 
 const EXTERNAL_LINKS = {
   fieldtheory: 'https://github.com/afar1/fieldtheory-cli',
@@ -64,8 +65,17 @@ export default function Landing() {
         </div>
       )}
 
-      {/* Floating controls */}
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      {/* Header */}
+      <header className="sticky top-0 z-50" style={{ background: 'var(--bg-blur)', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(16px)' }}>
+        <div className="max-w-[1200px] mx-auto px-5 h-[53px] flex items-center justify-between gap-3">
+          <Link to="/" className="flex items-center gap-2 text-[15px] font-bold shrink-0" style={{ color: 'var(--text-primary)' }}>
+            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="var(--accent)" aria-hidden="true">
+              <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/>
+            </svg>
+            <span className="hidden sm:inline">BookmarkViz</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
         {/* Language toggle */}
         <div
           className="flex rounded-full p-0.5 h-8"
@@ -73,6 +83,8 @@ export default function Landing() {
         >
           <button
             onClick={() => setLocale('zh')}
+            aria-label="中文"
+            aria-pressed={locale === 'zh'}
             className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 cursor-pointer"
             style={{
               background: locale === 'zh' ? 'var(--accent)' : 'transparent',
@@ -81,6 +93,8 @@ export default function Landing() {
           >中</button>
           <button
             onClick={() => setLocale('en')}
+            aria-label="English"
+            aria-pressed={locale === 'en'}
             className="px-2.5 rounded-full text-[13px] font-medium transition-all h-7 cursor-pointer"
             style={{
               background: locale === 'en' ? 'var(--accent)' : 'transparent',
@@ -114,6 +128,8 @@ export default function Landing() {
             <button
               key={key}
               onClick={() => setTheme(key)}
+              aria-label={key.charAt(0).toUpperCase() + key.slice(1)}
+              aria-pressed={theme === key}
               className="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer"
               style={{
                 background: theme === key ? 'var(--accent)' : 'transparent',
@@ -200,54 +216,123 @@ export default function Landing() {
             {locale === 'zh' ? '登录' : 'Login'}
           </button>
         ) : null}
-      </div>
+          </div>
+        </div>
+      </header>
 
       {/* Hero */}
-      <header className="flex-1 flex flex-col items-center justify-center px-5 pt-24 pb-20 text-center animate-fade-up">
-        <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 animate-scale-in"
-          style={{ background: 'var(--accent)' }}
-        >
-          <svg viewBox="0 0 24 24" className="w-8 h-8 text-white" fill="currentColor">
-            <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zm0 11h7v7h-7v-7zm-11 0h7v7H3v-7z"/>
-          </svg>
-        </div>
-
-        <h1
-          className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-scale-in delay-1"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          {l.title}
-          <span style={{ color: 'var(--accent)' }}>{l.titleAccent}</span>
-        </h1>
-
-        <p
-          className="text-lg max-w-lg mb-10 leading-relaxed animate-fade-in delay-2"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          {l.subtitle}
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center gap-3 animate-fade-in delay-3">
-          <Link
-            to="/dashboard"
-            className="px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
-            style={{ background: 'var(--accent)' }}
-          >
-            {isAuthenticated
-              ? (locale === 'zh' ? '进入我的数据' : 'Go to My Data')
-              : l.cta}
-          </Link>
-          {!loading && !isAuthenticated && (
-            <button
-              onClick={() => setShowLoginModal(true)}
-              className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-              style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }
-            }
+      <header className="px-5 pt-16 pb-16" style={{ borderBottom: '1px solid var(--border)' }}>
+        <div className="max-w-[1100px] mx-auto grid lg:grid-cols-[1.05fr_0.95fr] items-center gap-12">
+          <div>
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold mb-6"
+              style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
             >
-              {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
-            </button>
-          )}
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              X Bookmarks · local-first
+            </span>
+
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 animate-fade-up">
+              {l.title}<span style={{ color: 'var(--accent)' }}>{l.titleAccent}</span>
+            </h1>
+
+            <p className="text-lg max-w-lg mb-8 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {l.subtitle}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <Link
+                to="/dashboard"
+                className="px-7 py-3 rounded-full text-[15px] font-bold text-white transition-transform hover:scale-105 active:scale-95"
+                style={{ background: 'var(--accent)' }}
+              >
+                {isAuthenticated
+                  ? (locale === 'zh' ? '进入我的数据' : 'Go to My Data')
+                  : l.cta}
+              </Link>
+              {!loading && !isAuthenticated && (
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="px-7 py-3 rounded-full text-[15px] font-bold transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+                  style={{ border: '1px solid var(--accent)', color: 'var(--accent)' }}
+                >
+                  {locale === 'zh' ? '登录开始使用' : 'Login to Get Started'}
+                </button>
+              )}
+            </div>
+
+            <p className="text-[13px] mt-5" style={{ color: 'var(--text-tertiary)' }}>
+              {locale === 'zh' ? '本地优先 · 无追踪 · 登录后可选加密同步' : 'Local-first · No tracking · Optional encrypted sync'}
+            </p>
+          </div>
+
+          <div className="relative">
+            <div
+              className="absolute -inset-4 rounded-[32px] blur-3xl opacity-20"
+              style={{ background: 'var(--accent)' }}
+              aria-hidden="true"
+            />
+            <article
+              className="relative rounded-2xl p-5 animate-scale-in"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', boxShadow: '0 24px 60px rgba(0,0,0,0.12)' }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                  style={{ background: 'linear-gradient(135deg, #1d9bf0, #7856ff)' }}
+                >
+                  K
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[14px] font-bold" style={{ color: 'var(--text-primary)' }}>Andrej Karpathy</p>
+                  <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>@karpathy</p>
+                </div>
+                <span
+                  className="ml-auto text-[12px] font-bold px-2.5 py-1 rounded-full"
+                  style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}
+                >
+                  Bookmarked
+                </span>
+              </div>
+              <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                {locale === 'zh'
+                  ? '最好的学习方式，是把你读到的东西重新做一遍。'
+                  : 'The best way to learn is to rebuild what you just read.'}
+              </p>
+              <div className="flex items-center gap-6 mt-4 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
+                <span className="flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.7 8.7 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 1 1 21 11.5z" /></svg>
+                  128
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden="true"><path d="M17 2l4 4-4 4" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><path d="M7 22l-4-4 4-4" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /></svg>
+                  2.4K
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg>
+                  18.2K
+                </span>
+                <span className="ml-auto" style={{ color: 'var(--accent)' }}>
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4V3z" /></svg>
+                </span>
+              </div>
+            </article>
+
+            <div className="mt-3 ml-auto w-[85%] rounded-2xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+              <p className="text-[12px] font-bold mb-2" style={{ color: 'var(--text-tertiary)' }}>YOUR READING RHYTHM</p>
+              <div className="flex items-end gap-1 h-12">
+                {[30, 55, 40, 75, 60, 90, 70].map((h, i) => (
+                  <span
+                    key={i}
+                    className="flex-1 rounded-sm"
+                    style={{ height: `${h}%`, background: i === 5 ? 'var(--accent)' : 'var(--accent-bg-strong)' }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -263,12 +348,12 @@ export default function Landing() {
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: '📊', title: l.feature1Title, desc: l.feature1Desc },
-              { icon: '🏷️', title: l.feature2Title, desc: l.feature2Desc },
-              { icon: '🌐', title: l.feature3Title, desc: l.feature3Desc },
-              { icon: '🔍', title: l.feature4Title, desc: l.feature4Desc },
-              { icon: '📁', title: l.feature5Title, desc: l.feature5Desc },
-              { icon: '☁️', title: l.feature6Title, desc: l.feature6Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3v18h18" /><path d="M7 16v-4M12 16V8M17 16v-7" /></svg>, title: l.feature1Title, desc: l.feature1Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" /><circle cx="7.5" cy="7.5" r="1.2" /></svg>, title: l.feature2Title, desc: l.feature2Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" /></svg>, title: l.feature3Title, desc: l.feature3Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>, title: l.feature4Title, desc: l.feature4Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>, title: l.feature5Title, desc: l.feature5Desc },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.2 9.2 4 4 0 0 0 7 19h10.5z" /></svg>, title: l.feature6Title, desc: l.feature6Desc },
             ].map((f, i) => (
               <div
                 key={i}
@@ -279,7 +364,7 @@ export default function Landing() {
                   animationDelay: `${i * 0.06 + 0.1}s`,
                 }}
               >
-                <div className="text-2xl mb-4">{f.icon}</div>
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>{f.icon}</div>
                 <h3 className="text-[15px] font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{f.title}</h3>
                 <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{f.desc}</p>
               </div>
@@ -327,16 +412,21 @@ export default function Landing() {
       {/* Privacy */}
       <section className="py-20 px-5" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="max-w-4xl mx-auto text-center">
-          <div className="text-3xl mb-4">🔒</div>
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>
+            <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <rect x="4" y="10" width="16" height="11" rx="2" />
+              <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+            </svg>
+          </div>
           <h2 className="text-2xl font-bold mb-10" style={{ color: 'var(--text-primary)' }}>{l.privacyTitle}</h2>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: '💻', text: l.privacy1 },
-              { icon: '🚫', text: l.privacy2 },
-              { icon: '🔐', text: l.privacy3 },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2" /><path d="M8 22h8M12 18v4" /></svg>, text: l.privacy1 },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>, text: l.privacy2 },
+              { icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>, text: l.privacy3 },
             ].map((p, i) => (
               <div key={i} className="rounded-2xl p-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <div className="text-xl mb-3">{p.icon}</div>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-3" style={{ background: 'var(--accent-bg)', color: 'var(--accent)' }}>{p.icon}</div>
                 <p className="text-[14px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{p.text}</p>
               </div>
             ))}
@@ -370,26 +460,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-8 px-5 text-center text-[13px]" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-tertiary)' }}>
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex flex-wrap items-center justify-center gap-1.5">
-            <span>{l.footerBuiltWith}</span>
-            <a href={EXTERNAL_LINKS.fieldtheory} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>fieldtheory-cli</a>
-            <span>·</span>
-            <span>{l.footerPrivacy}</span>
-            <span>·</span>
-            <span>{l.footerNoTracking}</span>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-3 mt-1">
-            <a href={EXTERNAL_LINKS.github} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>GitHub</a>
-            <span>·</span>
-            <a href={EXTERNAL_LINKS.x} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--text-tertiary)' }}>@JeunesseQ</a>
-            <span>·</span>
-            <a href={EXTERNAL_LINKS.kiang} target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: 'var(--accent)' }}>Kiang</a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

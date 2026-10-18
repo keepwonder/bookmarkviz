@@ -19,6 +19,7 @@ export default function EngagementRank({ bookmarks }: Props) {
     if (!ref.current) return;
     const chart = echarts.init(ref.current);
     const c = getChartColors();
+    const compact = (ref.current.clientWidth || 0) < 420;
     const top = [...bookmarks].sort((a, b) => b.engagement.bookmarkCount - a.engagement.bookmarkCount).slice(0, 10).reverse();
 
     // Compute min/max for color scale
@@ -51,9 +52,21 @@ export default function EngagementRank({ bookmarks }: Props) {
           return `<strong>@${d.handle}</strong><br/>${d.text}<br/>🔖 ${d.value.toLocaleString()} · ❤️ ${d.likes.toLocaleString()} · 🔄 ${d.reposts.toLocaleString()}`;
         },
       },
-      grid: { left: 100, right: 40, top: 10, bottom: 20 },
-      xAxis: { type: 'value', axisLabel: { color: c.label }, splitLine: { lineStyle: { color: c.split } } },
-      yAxis: { type: 'category', data: top.map(b => `@${b.authorHandle}`), axisLabel: { fontSize: 12, color: c.textSecondary } },
+      grid: { left: compact ? 78 : 100, right: compact ? 12 : 40, top: 10, bottom: 20 },
+      xAxis: {
+        type: 'value',
+        axisLabel: {
+          color: c.label,
+          fontSize: compact ? 10 : 12,
+          formatter: (v: number) => v >= 1000 ? `${Math.round(v / 1000)}k` : String(v),
+        },
+        splitLine: { lineStyle: { color: c.split } },
+      },
+      yAxis: {
+        type: 'category',
+        data: top.map(b => `@${b.authorHandle}`),
+        axisLabel: { fontSize: compact ? 11 : 12, color: c.textSecondary, width: compact ? 66 : 90, overflow: 'truncate' },
+      },
       series: [{
         type: 'bar',
         data: top.map(bk => ({

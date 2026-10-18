@@ -19,6 +19,7 @@
   --success: #00ba7c;
   --overlay: rgba(0,0,0,0.5);
   --overlay-light: rgba(91,112,131,0.4);
+  --bg-blur: rgba(255,255,255,0.85);
   --card-bg: #ffffff;
   --chart-from: #1d9bf0;
   --chart-to: #004ba0;
@@ -53,6 +54,7 @@
   --success: #00ba7c;
   --overlay: rgba(0,0,0,0.7);
   --overlay-light: rgba(91,112,131,0.6);
+  --bg-blur: rgba(0,0,0,0.65);
   --card-bg: #16181c;
   --chart-from: #1d9bf0;
   --chart-to: #4dc1ff;
@@ -128,3 +130,24 @@ body {
 .hover-color-danger:hover { color: var(--danger); }
 .hover-bg-accent:hover { background: var(--accent-bg); }
 .transition-default { transition: background 0.15s, border-color 0.15s, color 0.15s; }
+
+
+/* Keyboard skip link */
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -64px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  transition: top 160ms ease;
+}
+.skip-link:focus {
+  top: 12px;
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}

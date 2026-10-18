@@ -5,6 +5,7 @@ import { useTheme } from '../lib/theme';
 import { useAuth } from '../lib/auth';
 import LoginModal from './LoginModal';
 import AccountModal from './AccountModal';
+import SiteFooter from './SiteFooter';
 
 const NAV_KEYS = ['dashboard', 'explore', 'collections', 'sync', 'about'] as const;
 const NAV_PATHS = ['/dashboard', '/explore', '/collections', '/sync', '/about'];
@@ -36,7 +37,8 @@ export default function Layout() {
   }, [userMenuOpen]);
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
+      <a className="skip-link" href="#main">跳到主要内容</a>
       <nav
         className="sticky top-0 z-50 backdrop-blur-xl"
         style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)' }}
@@ -55,6 +57,7 @@ export default function Layout() {
               <Link
                 key={key}
                 to={NAV_PATHS[i]}
+                aria-current={pathname === NAV_PATHS[i] ? 'page' : undefined}
                 className="px-4 py-2 text-[15px] rounded-full transition-all"
                 style={{
                   color: pathname === NAV_PATHS[i] ? 'var(--accent)' : 'var(--text-primary)',
@@ -236,6 +239,7 @@ export default function Layout() {
                 <Link
                   key={key}
                   to={NAV_PATHS[i]}
+                  aria-current={pathname === NAV_PATHS[i] ? 'page' : undefined}
                   onClick={closeMenu}
                   className="block px-4 py-2.5 text-[15px] rounded-xl transition-all"
                   style={{
@@ -341,7 +345,11 @@ export default function Layout() {
           </div>
         )}
       </nav>
-      <Outlet />
+      <div id="main" className="flex-1">
+        <Outlet />
+      </div>
+
+      <SiteFooter />
 
       <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
       <AccountModal open={showAccountModal} onClose={() => setShowAccountModal(false)} />
