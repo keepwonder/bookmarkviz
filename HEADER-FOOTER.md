@@ -29,6 +29,7 @@ BookmarkViz 是 X（Twitter）书签可视化工具，视觉上**保留 X 的语
 - localStorage key 是 `theme`（历史例外，未迁移，避免影响老用户偏好）。
 - 图表通过 `useTheme().resolved` 重新计算 `getChartColors()`，切换主题后 ECharts 会重绘。
 - 落地页与 App 的主题按钮都有 `aria-label` / `aria-pressed`。
+- 2026-10-18：`index.html` head 新增 anti-FOUC inline script，暗色首帧不再闪白。
 
 ## 本轮视觉优化
 
